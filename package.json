@@ -1,0 +1,55 @@
+{
+  "name": "warp-contracts-cli",
+  "version": "1.0.0",
+  "main": "./build/cli.js",
+  "license": "MIT",
+  "scripts": {
+    "start": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/index.ts",
+    "lint": "eslint . --ext .ts",
+    "lint:fix": "eslint . --ext .ts --fix",
+    "prettier:format": "prettier --config .prettierrc 'src/**/*.ts' --write",
+    "build": "tsc -p .",
+    "refresh": "rm -rf ./node_modules ./yarn-lock.json && yarn install",
+    "local": "sudo npm i -g"
+  },
+  "devDependencies": {
+    "@types/clear": "^0.1.2",
+    "@types/commander": "^2.12.2",
+    "@types/figlet": "^1.5.5",
+    "@types/inquirer": "^9.0.1",
+    "@types/node": "^18.7.15",
+    "@typescript-eslint/eslint-plugin": "^5.0.0",
+    "eslint": "^8.0.1",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-config-standard-with-typescript": "^22.0.0",
+    "eslint-plugin-import": "^2.25.2",
+    "eslint-plugin-n": "^15.0.0",
+    "eslint-plugin-prettier": "^3.4.1",
+    "eslint-plugin-promise": "^6.0.0",
+    "nodemon": "^2.0.19",
+    "prettier": "^2.7.1",
+    "ts-node": "^10.9.1",
+    "typescript": "*"
+  },
+  "dependencies": {
+    "@types/fs-extra": "^9.0.13",
+    "@types/semver": "^7.3.12",
+    "chalk": "4.1.2",
+    "clear": "^0.1.0",
+    "commander": "^9.4.0",
+    "figlet": "^1.5.2",
+    "find-up": "^2.1.0",
+    "fs-extra": "^10.1.0",
+    "g": "^2.0.1",
+    "loading-cli": "^1.1.0",
+    "nano": "^10.0.0",
+    "semver": "^7.3.7",
+    "warp-contracts": "^1.2.2"
+  },
+  "bin": {
+    "warp": "./build/cli.js"
+  },
+  "engines": {
+    "node": ">=16.5"
+  }
+}

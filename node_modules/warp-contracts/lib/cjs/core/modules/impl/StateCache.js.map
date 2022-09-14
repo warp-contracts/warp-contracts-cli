@@ -1,0 +1,1 @@
+{"version":3,"file":"StateCache.js","sourceRoot":"","sources":["../../../../../src/core/modules/impl/StateCache.ts"],"names":[],"mappings":";;;AAEA,gEAAgE;AAChE,SAAgB,WAAW,CAAC,EAAoB;IAC9C,wCAAwC;IACxC,IAAI,EAAE,CAAC,kBAAkB,KAAK,SAAS,EAAE;QACvC,OAAO,IAAI,CAAC;KACb;SAAM;QACL,OAAO,EAAE,CAAC,kBAAkB,KAAK,WAAW,CAAC;KAC9C;AACH,CAAC;AAPD,kCAOC"}
