@@ -3,22 +3,15 @@ import { chalkBlue, chalkGreen, getWarp, loader, loadWallet } from '../utils/uti
 import chalk from 'chalk';
 
 export const writeInteraction = async (contractId: string, interaction: string, cmdOptions: any, options: any) => {
-  if (!options.environment) {
-    console.log(chalk.red(`💣 [ERROR]:`), `-env --environment option must be specified.`);
-    return;
-  }
+  const env = options.environment;
+
   let load: any;
   try {
-    LoggerFactory.INST.logLevel(options.level || 'error');
+    LoggerFactory.INST.logLevel(options.level);
 
-    const warp = getWarp(options.environment);
-    console.log(
-      chalkBlue.bold(`👽 [INFO]:`),
-      `Initializing Warp in`,
-      chalkBlue.bold(`${options.environment}`),
-      'environment.'
-    );
-    const [wallet] = await loadWallet(warp, options.environment, options.wallet);
+    const warp = getWarp(env, options.cacheLocation);
+    console.log(chalkBlue.bold(`👽 [INFO]:`), `Initializing Warp in`, chalkBlue.bold(`${env}`), 'environment.');
+    const [wallet] = await loadWallet(warp, env, options.wallet);
 
     const contract = warp.contract(contractId).connect(wallet);
 
@@ -30,19 +23,16 @@ export const writeInteraction = async (contractId: string, interaction: string, 
     console.dir(result);
     console.log(
       `${
-        options.environment == 'mainnet' || options.environment == 'testnet'
+        env == 'mainnet' || env == 'testnet'
           ? `View interaction in SonAr: ${`https://sonar.warp.cc/#/app/contract/${result.originalTxId}${
-              options.environment == 'testnet' ? '?network=testnet' : ''
+              env == 'testnet' ? '?network=testnet' : ''
             }`}`
           : ''
       }`
     );
   } catch (err) {
     load.stop();
-    console.error(
-      chalk.red.bold(`💣 [ERROR]:`),
-      `Error while writing interaction: ${options.debug ? err.stack : err.message} `
-    );
+    console.error(chalk.red.bold(`💣 [ERROR]:`), `Error while writing interaction: ${err.message} `);
     return;
   }
 };

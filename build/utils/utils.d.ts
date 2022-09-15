@@ -9,7 +9,7 @@ export interface PackageJson {
         node: string;
     };
 }
-export declare const getWarp: (env: string) => Warp;
+export declare const getWarp: (env: string, cacheLocation: string) => Warp;
 export declare const loadWallet: (warp: Warp, env: string, walletPath: string) => Promise<[JWKInterface, string]>;
 export declare const chalkBlue: chalk.Chalk;
 export declare const chalkGreen: chalk.Chalk;

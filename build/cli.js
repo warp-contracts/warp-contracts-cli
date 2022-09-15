@@ -26,26 +26,24 @@ const viewState_1 = require("./commands/viewState");
     console.log((0, utils_1.chalkBlue)(`👾👾👾 Welcome to Warp Contracts CLI v.${packageJson.version} 👾👾👾\n`));
     program
         .option('-wlt, --wallet <string>', 'Path to the keyfile')
-        .option('-env --environment <string>', 'Envrionment in which action needs to be executed')
+        .option('-env --environment <string>', 'Envrionment in which action needs to be executed', 'mainnet')
         .option('-lvl --level <string>', 'Logging level: silly | trace | debug | info | warn | error | fatal', 'error')
-        .option('--debug, -d', 'Increases verbosity of errors and logs additional debug information.')
+        .option('-c --cacheLocation <string>', 'Realtive path to Level database location', '/cache/warp')
         .version((0, child_process_1.execSync)('npm view warp-contracts version').toString().replace('\n', ''), '-v, --version', 'Displays current version of Warp SDK');
     program
         .command('deploy')
         .description('Deploy contract')
-        .argument('<state>', 'relative path to the initial state file')
-        .option('-sf --sourceFile <string>', 'relative path to the contract src file')
-        .option('-st --sourceTxId <string>', 'id of the source transaction')
-        .option('-ws --wasmSrc <string>', 'relative path to WASM contract, e.g. `src`')
-        .option('-wg --wasmGlueCode <string>', 'relative path to WASM glue code (only for Rust contracts), e.g. `../pkg/erc20-contract.js`')
-        .action((state, cmdOptions) => {
-        (0, deployContract_1.deployContract)(state, cmdOptions, options);
+        .action(() => {
+        (0, deployContract_1.deployContract)(options);
     });
     program
         .command('read')
         .description('Read contract state based on contract id')
         .argument('<contractId>', 'id of the contract')
-        .option('-sv --save <string>', 'Saves state to a file')
+        .option('-sv --save [string]', 'Save state to a file, optionally name of the target file can be specified (e.g.: state.json)')
+        .option('-eo --evaluationOptions <options...>', 'Specify evaluation options: allowBigInt | allowUnsafeClient | internalWrites')
+        .option('-val --stateValidity', 'Beside the state object, return validity object')
+        .option('-err --stateErrorMessages', 'Beside the state object, return errorMessages object')
         .action((contractId, cmdOptions) => {
         (0, readState_1.readState)(contractId, cmdOptions, options);
     });

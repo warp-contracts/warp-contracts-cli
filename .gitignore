@@ -1,5 +1,4 @@
 .secrets
 node_modules
 logs
-cache
 yarn.error

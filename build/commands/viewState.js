@@ -8,27 +8,25 @@ const warp_contracts_1 = require("warp-contracts");
 const utils_1 = require("../utils/utils");
 const chalk_1 = __importDefault(require("chalk"));
 const viewState = async (contractId, interaction, cmdOptions, options) => {
-    if (!options.environment) {
-        console.log(chalk_1.default.red(`💣 [ERROR]:`), `-env --environment option must be specified.`);
-        return;
-    }
+    const env = options.environment;
     let load;
     try {
-        warp_contracts_1.LoggerFactory.INST.logLevel(options.level || 'error');
-        const warp = (0, utils_1.getWarp)(options.environment);
-        console.log(utils_1.chalkBlue.bold(`👽 [INFO]:`), `Initializing Warp in`, utils_1.chalkBlue.bold(`${options.environment}`), 'environment.');
-        const [wallet] = await (0, utils_1.loadWallet)(warp, options.environment, options.wallet);
+        warp_contracts_1.LoggerFactory.INST.logLevel(options.level);
+        const warp = (0, utils_1.getWarp)(env, options.cacheLocation);
+        console.log(utils_1.chalkBlue.bold(`👽 [INFO]:`), `Initializing Warp in`, utils_1.chalkBlue.bold(`${env}`), 'environment.');
+        const [wallet] = await (0, utils_1.loadWallet)(warp, env, options.wallet);
         const contract = warp.contract(contractId).connect(wallet);
         load = (0, utils_1.loader)('Viewing state...');
-        console.log(JSON.parse(interaction));
         const result = await contract.viewState(JSON.parse(interaction));
         load.stop();
         console.log(utils_1.chalkGreen.bold(`🍭 [SUCCESS]:`), `View state executed correctly. Result:`);
+        //success: --> tylko result
+        //error --> err.message
         console.dir(result);
     }
     catch (err) {
         load.stop();
-        console.error(chalk_1.default.red.bold(`💣 [ERROR]:`), `Error while viewing state: ${options.debug ? err.stack : err.message} `);
+        console.error(chalk_1.default.red.bold(`💣 [ERROR]:`), `Error while viewing state: ${err.message} `);
         return;
     }
 };

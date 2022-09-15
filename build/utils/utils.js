@@ -12,7 +12,9 @@ const semver_1 = __importDefault(require("semver"));
 const fs_extra_1 = __importDefault(require("fs-extra"));
 const find_up_1 = __importDefault(require("find-up"));
 const loading_cli_1 = __importDefault(require("loading-cli"));
-const getWarp = (env) => {
+const getWarp = (env, cacheLocation) => {
+    const cache = process.cwd() + cacheLocation;
+    console.log(cache);
     if (env == 'local') {
         return warp_contracts_1.WarpFactory.forLocal(1984);
     }
@@ -20,7 +22,7 @@ const getWarp = (env) => {
         return warp_contracts_1.WarpFactory.forTestnet();
     }
     else if (env == 'mainnet') {
-        return warp_contracts_1.WarpFactory.forMainnet({ ...warp_contracts_1.defaultCacheOptions, inMemory: true });
+        return warp_contracts_1.WarpFactory.forMainnet({ dbLocation: cache, ...warp_contracts_1.defaultCacheOptions });
     }
     else {
         throw new Error(chalk_1.default.red(`Unknown network:`, chalk_1.default.bgRed(`${env}`)));

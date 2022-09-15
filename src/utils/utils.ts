@@ -16,13 +16,15 @@ export interface PackageJson {
   };
 }
 
-export const getWarp = (env: string) => {
+export const getWarp = (env: string, cacheLocation: string) => {
+  const cache = process.cwd() + cacheLocation;
+  console.log(cache);
   if (env == 'local') {
     return WarpFactory.forLocal(1984);
   } else if (env == 'testnet') {
     return WarpFactory.forTestnet();
   } else if (env == 'mainnet') {
-    return WarpFactory.forMainnet({ ...defaultCacheOptions, inMemory: true });
+    return WarpFactory.forMainnet({ dbLocation: cache, ...defaultCacheOptions });
   } else {
     throw new Error(chalk.red(`Unknown network:`, chalk.bgRed(`${env}`)));
   }
