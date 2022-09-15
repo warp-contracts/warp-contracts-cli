@@ -1,0 +1,11 @@
+{
+  "symbol": "ERC20-test",
+  "name": "Sample ERC20 token",
+  "decimals": 18,
+  "totalSupply": 100,
+  "allowances": {},
+  "settings": null,
+  "owner": "",
+  "canEvolve": true,
+  "evolve": ""
+}

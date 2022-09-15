@@ -15,9 +15,15 @@ const readState = async (contractId, cmdOptions, options) => {
         warp_contracts_1.LoggerFactory.INST.logLevel(options.level);
         const warp = (0, utils_1.getWarp)(env, options.cacheLocation);
         console.log(utils_1.chalkBlue.bold(`👽 [INFO]:`), `Initializing Warp in`, utils_1.chalkBlue.bold(`${env}`), 'environment.');
-        const evaluationOptionsList = cmdOptions.evaluationOptions.filter((option) => ['allowBigInt', 'allowUnsafeClient', 'internalWrites'].includes(option));
-        const evaluationOptions = evaluationOptionsList.reduce((o, key) => ({ ...o, [key]: true }), {});
-        const contract = warp.contract(contractId).setEvaluationOptions(evaluationOptions);
+        let contract;
+        if (cmdOptions.evaluationOptions) {
+            const evaluationOptionsList = cmdOptions.evaluationOptions.filter((option) => ['allowBigInt', 'allowUnsafeClient', 'internalWrites'].includes(option));
+            const evaluationOptions = evaluationOptionsList.reduce((o, key) => ({ ...o, [key]: true }), {});
+            contract = warp.contract(contractId).setEvaluationOptions(evaluationOptions);
+        }
+        else {
+            contract = warp.contract(contractId);
+        }
         load = (0, utils_1.loader)('Loading state...');
         const { cachedValue } = await contract.readState();
         load.stop();

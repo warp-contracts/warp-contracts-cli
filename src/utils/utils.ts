@@ -18,7 +18,6 @@ export interface PackageJson {
 
 export const getWarp = (env: string, cacheLocation: string) => {
   const cache = process.cwd() + cacheLocation;
-  console.log(cache);
   if (env == 'local') {
     return WarpFactory.forLocal(1984);
   } else if (env == 'testnet') {

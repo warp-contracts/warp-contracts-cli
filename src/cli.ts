@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 import { Command } from 'commander';
 import clear from 'clear';
-import chalk from 'chalk';
 import figlet from 'figlet';
 import { deployContract } from './commands/deployContract';
 import { readState } from './commands/readState';

@@ -19,10 +19,14 @@ const viewState = async (contractId, interaction, cmdOptions, options) => {
         load = (0, utils_1.loader)('Viewing state...');
         const result = await contract.viewState(JSON.parse(interaction));
         load.stop();
-        console.log(utils_1.chalkGreen.bold(`🍭 [SUCCESS]:`), `View state executed correctly. Result:`);
-        //success: --> tylko result
-        //error --> err.message
-        console.dir(result);
+        if (result.type == 'error') {
+            console.log(chalk_1.default.red.bold(`💣 [ERROR]:`), `View state executed incorrectly. Error message:`);
+            console.dir(result.errorMessage);
+        }
+        else {
+            console.log(utils_1.chalkGreen.bold(`🍭 [SUCCESS]:`), `View state executed correctly. Result:`);
+            console.dir(result.result);
+        }
     }
     catch (err) {
         load.stop();

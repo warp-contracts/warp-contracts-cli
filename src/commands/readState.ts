@@ -1,5 +1,5 @@
 import chalk from 'chalk';
-import { LoggerFactory } from 'warp-contracts';
+import { Contract, LoggerFactory } from 'warp-contracts';
 import { chalkBlue, chalkGreen, getWarp, loader } from '../utils/utils';
 import fs from 'fs';
 
@@ -11,11 +11,16 @@ export const readState = async (contractId: string, cmdOptions: any, options: an
     const warp = getWarp(env, options.cacheLocation);
     console.log(chalkBlue.bold(`👽 [INFO]:`), `Initializing Warp in`, chalkBlue.bold(`${env}`), 'environment.');
 
-    const evaluationOptionsList = cmdOptions.evaluationOptions.filter((option: string) =>
-      ['allowBigInt', 'allowUnsafeClient', 'internalWrites'].includes(option)
-    );
-    const evaluationOptions = evaluationOptionsList.reduce((o: any, key: string) => ({ ...o, [key]: true }), {});
-    const contract = warp.contract(contractId).setEvaluationOptions(evaluationOptions);
+    let contract: Contract;
+    if (cmdOptions.evaluationOptions) {
+      const evaluationOptionsList = cmdOptions.evaluationOptions.filter((option: string) =>
+        ['allowBigInt', 'allowUnsafeClient', 'internalWrites'].includes(option)
+      );
+      const evaluationOptions = evaluationOptionsList.reduce((o: any, key: string) => ({ ...o, [key]: true }), {});
+      contract = warp.contract(contractId).setEvaluationOptions(evaluationOptions);
+    } else {
+      contract = warp.contract(contractId);
+    }
 
     load = loader('Loading state...');
     const { cachedValue } = await contract.readState();

@@ -14,7 +14,6 @@ const find_up_1 = __importDefault(require("find-up"));
 const loading_cli_1 = __importDefault(require("loading-cli"));
 const getWarp = (env, cacheLocation) => {
     const cache = process.cwd() + cacheLocation;
-    console.log(cache);
     if (env == 'local') {
         return warp_contracts_1.WarpFactory.forLocal(1984);
     }
