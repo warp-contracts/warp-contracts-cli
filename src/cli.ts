@@ -56,8 +56,8 @@ import { viewState } from './commands/viewState';
       '-eo --evaluationOptions <options...>',
       'Specify evaluation options: allowBigInt | allowUnsafeClient | internalWrites'
     )
-    .option('-val --stateValidity', 'Beside the state object, return validity object')
-    .option('-err --stateErrorMessages', 'Beside the state object, return errorMessages object')
+    .option('-stval --stateValidity', 'Beside the state object, return validity object')
+    .option('-sterr --stateErrorMessages', 'Beside the state object, return errorMessages object')
     .action((contractId, cmdOptions) => {
       readState(contractId, cmdOptions, options);
     });
