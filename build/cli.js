@@ -19,20 +19,20 @@ const viewState_1 = require("./commands/viewState");
     (0, clear_1.default)();
     const packageJson = await (0, utils_1.getPackageJson)();
     (0, utils_1.printWarningAboutNodeJsVersionIfNecessary)(packageJson);
-    console.log((0, utils_1.chalkBlue)(figlet_1.default.textSync('WARP-CLI', {
+    console.log((0, utils_1.chalkBlue)(figlet_1.default.textSync('WARP', {
         horizontalLayout: 'full',
-        font: 'Small Slant'
+        font: 'Speed'
     })));
-    console.log((0, utils_1.chalkBlue)(`\n👾Welcome to Warp Contracts CLI v.${packageJson.version} 👾\n`));
+    console.log((0, utils_1.chalkBlue)(`👾👾👾 Welcome to Warp Contracts CLI v.${packageJson.version} 👾👾👾\n`));
     program
         .option('-wlt, --wallet <string>', 'Path to the keyfile')
-        .requiredOption('-env --environment <string>', 'Envrionment in which action needs to be executed')
+        .option('-env --environment <string>', 'Envrionment in which action needs to be executed')
         .option('-lvl --level <string>', 'Logging level: silly | trace | debug | info | warn | error | fatal', 'error')
         .option('--debug, -d', 'Increases verbosity of errors and logs additional debug information.')
         .version((0, child_process_1.execSync)('npm view warp-contracts version').toString().replace('\n', ''), '-v, --version', 'Displays current version of Warp SDK');
     program
         .command('deploy')
-        .description('Deploys contract')
+        .description('Deploy contract')
         .argument('<state>', 'relative path to the initial state file')
         .option('-sf --sourceFile <string>', 'relative path to the contract src file')
         .option('-st --sourceTxId <string>', 'id of the source transaction')
@@ -43,7 +43,7 @@ const viewState_1 = require("./commands/viewState");
     });
     program
         .command('read')
-        .description('Reads contract state based on contract id')
+        .description('Read contract state based on contract id')
         .argument('<contractId>', 'id of the contract')
         .option('-sv --save <string>', 'Saves state to a file')
         .action((contractId, cmdOptions) => {
@@ -51,7 +51,7 @@ const viewState_1 = require("./commands/viewState");
     });
     program
         .command('write')
-        .description('Writes interaction to the contract based on specified contract id')
+        .description('Write interaction to the contract based on specified contract id')
         .argument('<contractId>', 'id of the contract')
         .argument('<interaction>', 'interaction object passed to the writeInteraction method')
         .option('-str --strict <string>', 'if true strict mode is enabled', false)

@@ -4,7 +4,11 @@ import inquirer from 'inquirer';
 import chalk from 'chalk';
 
 export const writeInteraction = async (contractId: string, interaction: string, cmdOptions: any, options: any) => {
-  // let load: any;
+  if (!options.environment) {
+    console.log(chalk.red(`💣 [ERROR]:`), `-env --environment option must be specified.`);
+    return;
+  }
+  let load: any;
   try {
     LoggerFactory.INST.logLevel(options.level || 'error');
 
@@ -19,24 +23,23 @@ export const writeInteraction = async (contractId: string, interaction: string, 
 
     const contract = warp.contract(contractId).connect(wallet);
 
-    // load = loader('Writing interaction...');
+    load = loader('Writing interaction...');
     console.log(JSON.parse(interaction));
     const result = await contract.writeInteraction(JSON.parse(interaction), cmdOptions.strict && { strict: true });
-    // load.stop();
+    load.stop();
     console.log(chalkGreen.bold(`🍭 [SUCCESS]:`), `Interaction written correctly. Interaction:`);
     console.dir(result);
     console.log(
       `${
         options.environment == 'mainnet' || options.environment == 'testnet'
-          ? `View contract in SonAr: ${`https://sonar.warp.cc/#/app/contract/${result.originalTxId}${
+          ? `View interaction in SonAr: ${`https://sonar.warp.cc/#/app/contract/${result.originalTxId}${
               options.environment == 'testnet' ? '?network=testnet' : ''
             }`}`
           : ''
       }`
     );
   } catch (err) {
-    // load.stop();
-
+    load.stop();
     console.error(
       chalk.red.bold(`💣 [ERROR]:`),
       `Error while writing interaction: ${options.debug ? err.stack : err.message} `

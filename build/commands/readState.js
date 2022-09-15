@@ -9,6 +9,10 @@ const warp_contracts_1 = require("warp-contracts");
 const utils_1 = require("../utils/utils");
 const fs_1 = __importDefault(require("fs"));
 const readState = async (contractId, cmdOptions, options) => {
+    if (!options.environment) {
+        console.log(chalk_1.default.red(`💣 [ERROR]:`), `-env --environment option must be specified.`);
+        return;
+    }
     let load;
     try {
         warp_contracts_1.LoggerFactory.INST.logLevel(options.level || 'error');
@@ -19,15 +23,15 @@ const readState = async (contractId, cmdOptions, options) => {
         const { cachedValue } = await contract.readState();
         load.stop();
         console.log(utils_1.chalkGreen.bold(`🍭 [SUCCESS]:`), `State for`, (0, utils_1.chalkGreen)(`${contractId}:`));
-        console.dir(JSON.parse(cachedValue.state));
+        console.dir(cachedValue.state);
         if (cmdOptions.save) {
-            fs_1.default.writeFileSync(`state_${contractId}.json`, JSON.stringify(JSON.parse(cachedValue.state), null, 2));
+            fs_1.default.writeFileSync(`state_${contractId}.json`, JSON.stringify(cachedValue.state, null, 2));
             console.log(`${utils_1.chalkBlue.bold(`👽 [INFO]:`)} State saved in: ${(0, utils_1.chalkBlue)(`state_${contractId}.json`)} file.`);
         }
     }
     catch (err) {
         load.stop();
-        console.error(chalk_1.default.red.bold(`💣 [ERROR]:`), `Error while deploying contract: ${options.debug ? err.stack : err.message} `);
+        console.error(chalk_1.default.red.bold(`💣 [ERROR]:`), `Error while reading contract state: ${options.debug ? err.stack : err.message} `);
         return;
     }
 };

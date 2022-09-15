@@ -17,21 +17,20 @@ import { viewState } from './commands/viewState';
 
   const packageJson = await getPackageJson();
   printWarningAboutNodeJsVersionIfNecessary(packageJson);
-
   console.log(
     chalkBlue(
-      figlet.textSync('WARP-CLI', {
+      figlet.textSync('WARP', {
         horizontalLayout: 'full',
-        font: 'Slant'
+        font: 'Speed'
       })
     )
   );
 
-  console.log(chalkBlue(`\n👾Welcome to Warp Contracts CLI v.${packageJson.version} 👾\n`));
+  console.log(chalkBlue(`👾👾👾 Welcome to Warp Contracts CLI v.${packageJson.version} 👾👾👾\n`));
 
   program
     .option('-wlt, --wallet <string>', 'Path to the keyfile')
-    .requiredOption('-env --environment <string>', 'Envrionment in which action needs to be executed')
+    .option('-env --environment <string>', 'Envrionment in which action needs to be executed')
     .option('-lvl --level <string>', 'Logging level: silly | trace | debug | info | warn | error | fatal', 'error')
     .option('--debug, -d', 'Increases verbosity of errors and logs additional debug information.')
     .version(

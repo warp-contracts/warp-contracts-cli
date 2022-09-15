@@ -10,6 +10,10 @@ const path_1 = __importDefault(require("path"));
 const warp_contracts_1 = require("warp-contracts");
 const chalk_1 = __importDefault(require("chalk"));
 const deployContract = async (state, cmdOptions, options) => {
+    if (!options.environment) {
+        console.log(chalk_1.default.red(`💣 [ERROR]:`), `-env --environment option must be specified.`);
+        return;
+    }
     if (!cmdOptions.sourceFile && !cmdOptions.sourceTxId) {
         console.log(chalk_1.default.red(`💣 [ERROR]:`), `Either source transaction id or source file must be specified.`);
         return;
@@ -25,7 +29,7 @@ const deployContract = async (state, cmdOptions, options) => {
         let deployment;
         load = (0, utils_1.loader)('Deploying contract...');
         if (cmdOptions.sourceFile) {
-            contractSrc = fs_1.default.readFileSync(path_1.default.resolve(cmdOptions.sourceFile), 'utf8');
+            contractSrc = fs_1.default.readFileSync(path_1.default.resolve(cmdOptions.sourceFile));
             deployment = await warp.createContract.deploy({
                 wallet,
                 initState: JSON.stringify(initialState),

@@ -5,6 +5,11 @@ import { ContractDeploy, LoggerFactory } from 'warp-contracts';
 import chalk from 'chalk';
 
 export const deployContract = async (state: string, cmdOptions: any, options: any) => {
+  if (!options.environment) {
+    console.log(chalk.red(`💣 [ERROR]:`), `-env --environment option must be specified.`);
+    return;
+  }
+
   if (!cmdOptions.sourceFile && !cmdOptions.sourceTxId) {
     console.log(chalk.red(`💣 [ERROR]:`), `Either source transaction id or source file must be specified.`);
     return;
@@ -23,12 +28,12 @@ export const deployContract = async (state: string, cmdOptions: any, options: an
     const [wallet] = await loadWallet(warp, options.environment, options.wallet);
     const initialState = fs.readFileSync(path.resolve(state), 'utf8');
 
-    let contractSrc: string | null = null;
+    let contractSrc: Buffer | null = null;
     let deployment: ContractDeploy;
     load = loader('Deploying contract...');
 
     if (cmdOptions.sourceFile) {
-      contractSrc = fs.readFileSync(path.resolve(cmdOptions.sourceFile), 'utf8');
+      contractSrc = fs.readFileSync(path.resolve(cmdOptions.sourceFile));
       deployment = await warp.createContract.deploy({
         wallet,
         initState: JSON.stringify(initialState),

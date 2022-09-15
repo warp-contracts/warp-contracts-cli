@@ -1,10 +1,13 @@
 import { LoggerFactory } from 'warp-contracts';
 import { chalkBlue, chalkGreen, getWarp, loader, loadWallet } from '../utils/utils';
-import inquirer from 'inquirer';
 import chalk from 'chalk';
 
 export const viewState = async (contractId: string, interaction: string, cmdOptions: any, options: any) => {
-  // let load: any;
+  if (!options.environment) {
+    console.log(chalk.red(`💣 [ERROR]:`), `-env --environment option must be specified.`);
+    return;
+  }
+  let load: any;
   try {
     LoggerFactory.INST.logLevel(options.level || 'error');
 
@@ -19,14 +22,14 @@ export const viewState = async (contractId: string, interaction: string, cmdOpti
 
     const contract = warp.contract(contractId).connect(wallet);
 
-    // load = loader('Writing interaction...');
+    load = loader('Viewing state...');
     console.log(JSON.parse(interaction));
     const result = await contract.viewState(JSON.parse(interaction));
-    // load.stop();
+    load.stop();
     console.log(chalkGreen.bold(`🍭 [SUCCESS]:`), `View state executed correctly. Result:`);
     console.dir(result);
   } catch (err) {
-    // load.stop();
+    load.stop();
 
     console.error(
       chalk.red.bold(`💣 [ERROR]:`),
