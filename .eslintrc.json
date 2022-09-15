@@ -3,6 +3,8 @@
     "browser": true,
     "es2021": true
   },
+  "parser": "@typescript-eslint/parser",
+  "plugins": ["@typescript-eslint", "prettier"],
   "extends": "prettier",
   "overrides": [],
   "parserOptions": {
@@ -12,6 +14,5 @@
   },
   "rules": {
     "prettier/prettier": ["error"]
-  },
-  "plugins": ["prettier"]
+  }
 }

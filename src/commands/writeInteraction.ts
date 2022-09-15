@@ -1,6 +1,5 @@
 import { LoggerFactory } from 'warp-contracts';
 import { chalkBlue, chalkGreen, getWarp, loader, loadWallet } from '../utils/utils';
-import inquirer from 'inquirer';
 import chalk from 'chalk';
 
 export const writeInteraction = async (contractId: string, interaction: string, cmdOptions: any, options: any) => {
