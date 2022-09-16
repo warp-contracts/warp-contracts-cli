@@ -1,4 +1,4 @@
-import { WarpFactory, defaultCacheOptions, Warp, ArWallet } from 'warp-contracts';
+import { WarpFactory, defaultCacheOptions, Warp, LogLevel } from 'warp-contracts';
 import fs from 'fs';
 import path from 'path';
 import { JWKInterface } from 'arweave/node/lib/wallet';

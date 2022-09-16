@@ -25,11 +25,11 @@ const viewState_1 = require("./commands/viewState");
     })));
     console.log((0, utils_1.chalkBlue)(`👾👾👾 Welcome to Warp Contracts CLI v.${packageJson.version} 👾👾👾\n`));
     program
-        .option('-wlt, --wallet <string>', 'Path to the keyfile')
-        .option('-env --environment <string>', 'Envrionment in which action needs to be executed', 'mainnet')
-        .option('-lvl --level <string>', 'Logging level: silly | trace | debug | info | warn | error | fatal', 'error')
-        .option('-c --cacheLocation <string>', 'Realtive path to Level database location', '/cache/warp')
-        .version((0, child_process_1.execSync)('npm view warp-contracts version').toString().replace('\n', ''), '-v, --version', 'Displays current version of Warp SDK');
+        .option('-wlt, --wallet <string>', 'Path to the wallet keyfile (e.g.: ./secrets/wallet.json)')
+        .option('-env --environment <string>', 'Envrionment in which action needs to be executed: local | testnet | mainnet', 'mainnet')
+        .option('-lvl --level <string>', 'Logging level: silly | trace | debug | info | warn | error | fatal | none', 'none')
+        .option('-c --cacheLocation <string>', 'Realtive path to the Level database location', '/cache/warp')
+        .version((0, child_process_1.execSync)('npm view warp-contracts version').toString().replace('\n', ''), '-v, --version', 'Display current version of Warp SDK');
     program
         .command('deploy')
         .description('Deploy contract')
@@ -42,8 +42,8 @@ const viewState_1 = require("./commands/viewState");
         .argument('<contractId>', 'id of the contract')
         .option('-sv --save [string]', 'Save state to a file, optionally name of the target file can be specified (e.g.: state.json)')
         .option('-eo --evaluationOptions <options...>', 'Specify evaluation options: allowBigInt | allowUnsafeClient | internalWrites')
-        .option('-val --stateValidity', 'Beside the state object, return validity object')
-        .option('-err --stateErrorMessages', 'Beside the state object, return errorMessages object')
+        .option('-stval --stateValidity', 'Beside the state object, return validity object')
+        .option('-sterr --stateErrorMessages', 'Beside the state object, return errorMessages object')
         .action((contractId, cmdOptions) => {
         (0, readState_1.readState)(contractId, cmdOptions, options);
     });
@@ -52,7 +52,8 @@ const viewState_1 = require("./commands/viewState");
         .description('Write interaction to the contract based on specified contract id')
         .argument('<contractId>', 'id of the contract')
         .argument('<interaction>', 'interaction object passed to the writeInteraction method')
-        .option('-str --strict <string>', 'if true strict mode is enabled', false)
+        .option('-str --strict', 'when set - methods evaluate the state and lets verify wether transaction has been processed correctly', false)
+        .option('-eo --evaluationOptions <options...>', 'Specify evaluation options: allowBigInt | allowUnsafeClient | internalWrites')
         .action((contractId, interaction, cmdOptions) => {
         (0, writeInteraction_1.writeInteraction)(contractId, interaction, cmdOptions, options);
     });

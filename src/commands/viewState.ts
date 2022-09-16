@@ -1,16 +1,17 @@
-import { LoggerFactory } from 'warp-contracts';
+import { LoggerFactory, LogLevel } from 'warp-contracts';
 import { chalkBlue, chalkGreen, getWarp, loader, loadWallet } from '../utils/utils';
 import chalk from 'chalk';
+import { OptionValues } from 'commander';
 
-export const viewState = async (contractId: string, interaction: string, cmdOptions: any, options: any) => {
-  const env = options.environment;
+export const viewState = async (contractId: string, interaction: string, cmdOptions: OptionValues, options: OptionValues) => {
+  const { environment, level, cacheLocation, wallet: walletPath } = options;
   let load: any;
   try {
-    LoggerFactory.INST.logLevel(options.level);
+    LoggerFactory.INST.logLevel(level);
 
-    const warp = getWarp(env, options.cacheLocation);
-    console.log(chalkBlue.bold(`👽 [INFO]:`), `Initializing Warp in`, chalkBlue.bold(`${env}`), 'environment.');
-    const [wallet] = await loadWallet(warp, env, options.wallet);
+    const warp = getWarp(environment, cacheLocation);
+    console.log(chalkBlue.bold(`👽 [INFO]:`), `Initializing Warp in`, chalkBlue.bold(`${environment}`), 'environment.');
+    const [wallet] = await loadWallet(warp, environment, walletPath);
 
     const contract = warp.contract(contractId).connect(wallet);
 
@@ -27,7 +28,6 @@ export const viewState = async (contractId: string, interaction: string, cmdOpti
     }
   } catch (err) {
     load.stop();
-
     console.error(chalk.red.bold(`💣 [ERROR]:`), `Error while viewing state: ${err.message} `);
     return;
   }

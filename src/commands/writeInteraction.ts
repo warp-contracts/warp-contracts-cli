@@ -1,8 +1,15 @@
-import { LoggerFactory } from 'warp-contracts';
+import { Contract, LoggerFactory } from 'warp-contracts';
 import { chalkBlue, chalkGreen, getWarp, loader, loadWallet } from '../utils/utils';
 import chalk from 'chalk';
+import { CmdOptions, getContract } from './readState';
+import { OptionValues } from 'commander';
 
-export const writeInteraction = async (contractId: string, interaction: string, cmdOptions: any, options: any) => {
+export const writeInteraction = async (
+  contractId: string,
+  interaction: string,
+  cmdOptions: any,
+  options: OptionValues
+) => {
   const env = options.environment;
 
   let load: any;
@@ -13,7 +20,8 @@ export const writeInteraction = async (contractId: string, interaction: string, 
     console.log(chalkBlue.bold(`👽 [INFO]:`), `Initializing Warp in`, chalkBlue.bold(`${env}`), 'environment.');
     const [wallet] = await loadWallet(warp, env, options.wallet);
 
-    const contract = warp.contract(contractId).connect(wallet);
+    let contract: Contract;
+    contract = getContract(cmdOptions, warp, contractId, true, wallet);
 
     load = loader('Writing interaction...');
     console.log(JSON.parse(interaction));

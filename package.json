@@ -44,7 +44,7 @@
     "loading-cli": "^1.1.0",
     "nano": "^10.0.0",
     "semver": "^7.3.7",
-    "warp-contracts": "^1.2.2"
+    "warp-contracts": "1.2.5"
   },
   "bin": {
     "warp": "./build/cli.js"

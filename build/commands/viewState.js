@@ -8,13 +8,13 @@ const warp_contracts_1 = require("warp-contracts");
 const utils_1 = require("../utils/utils");
 const chalk_1 = __importDefault(require("chalk"));
 const viewState = async (contractId, interaction, cmdOptions, options) => {
-    const env = options.environment;
+    const { environment, level, cacheLocation, wallet: walletPath } = options;
     let load;
     try {
-        warp_contracts_1.LoggerFactory.INST.logLevel(options.level);
-        const warp = (0, utils_1.getWarp)(env, options.cacheLocation);
-        console.log(utils_1.chalkBlue.bold(`👽 [INFO]:`), `Initializing Warp in`, utils_1.chalkBlue.bold(`${env}`), 'environment.');
-        const [wallet] = await (0, utils_1.loadWallet)(warp, env, options.wallet);
+        warp_contracts_1.LoggerFactory.INST.logLevel(level);
+        const warp = (0, utils_1.getWarp)(environment, cacheLocation);
+        console.log(utils_1.chalkBlue.bold(`👽 [INFO]:`), `Initializing Warp in`, utils_1.chalkBlue.bold(`${environment}`), 'environment.');
+        const [wallet] = await (0, utils_1.loadWallet)(warp, environment, walletPath);
         const contract = warp.contract(contractId).connect(wallet);
         load = (0, utils_1.loader)('Viewing state...');
         const result = await contract.viewState(JSON.parse(interaction));

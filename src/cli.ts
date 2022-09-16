@@ -27,14 +27,22 @@ import { viewState } from './commands/viewState';
 
   console.log(chalkBlue(`👾👾👾 Welcome to Warp Contracts CLI v.${packageJson.version} 👾👾👾\n`));
   program
-    .option('-wlt, --wallet <string>', 'Path to the keyfile')
-    .option('-env --environment <string>', 'Envrionment in which action needs to be executed', 'mainnet')
-    .option('-lvl --level <string>', 'Logging level: silly | trace | debug | info | warn | error | fatal', 'error')
-    .option('-c --cacheLocation <string>', 'Realtive path to Level database location', '/cache/warp')
+    .option('-wlt, --wallet <string>', 'Path to the wallet keyfile (e.g.: ./secrets/wallet.json)')
+    .option(
+      '-env --environment <string>',
+      'Envrionment in which action needs to be executed: local | testnet | mainnet',
+      'mainnet'
+    )
+    .option(
+      '-lvl --level <string>',
+      'Logging level: silly | trace | debug | info | warn | error | fatal | none',
+      'none'
+    )
+    .option('-c --cacheLocation <string>', 'Realtive path to the Level database location', '/cache/warp')
     .version(
       execSync('npm view warp-contracts version').toString().replace('\n', ''),
       '-v, --version',
-      'Displays current version of Warp SDK'
+      'Display current version of Warp SDK'
     );
 
   program
@@ -67,7 +75,15 @@ import { viewState } from './commands/viewState';
     .description('Write interaction to the contract based on specified contract id')
     .argument('<contractId>', 'id of the contract')
     .argument('<interaction>', 'interaction object passed to the writeInteraction method')
-    .option('-str --strict <string>', 'if true strict mode is enabled', false)
+    .option(
+      '-str --strict',
+      'when set - methods evaluate the state and lets verify wether transaction has been processed correctly',
+      false
+    )
+    .option(
+      '-eo --evaluationOptions <options...>',
+      'Specify evaluation options: allowBigInt | allowUnsafeClient | internalWrites'
+    )
     .action((contractId, interaction, cmdOptions) => {
       writeInteraction(contractId, interaction, cmdOptions, options);
     });

@@ -1,35 +1,32 @@
 import chalk from 'chalk';
-import { Contract, LoggerFactory } from 'warp-contracts';
+import { Contract, LoggerFactory, LogLevel, Warp } from 'warp-contracts';
 import { chalkBlue, chalkGreen, getWarp, loader } from '../utils/utils';
 import fs from 'fs';
+import { OptionValues } from 'commander';
 
-export const readState = async (contractId: string, cmdOptions: any, options: any) => {
+export interface CmdOptions {
+  evaluationOptions: string[];
+  save: boolean;
+  validity: boolean;
+  errorMessages: boolean;
+}
+
+export const readState = async (contractId: string, cmdOptions: CmdOptions, options: OptionValues) => {
   const env = options.environment;
   let load: any;
   try {
     LoggerFactory.INST.logLevel(options.level);
     const warp = getWarp(env, options.cacheLocation);
     console.log(chalkBlue.bold(`👽 [INFO]:`), `Initializing Warp in`, chalkBlue.bold(`${env}`), 'environment.');
-
     let contract: Contract;
-    if (cmdOptions.evaluationOptions) {
-      const evaluationOptionsList = cmdOptions.evaluationOptions.filter((option: string) =>
-        ['allowBigInt', 'allowUnsafeClient', 'internalWrites'].includes(option)
-      );
-      const evaluationOptions = evaluationOptionsList.reduce((o: any, key: string) => ({ ...o, [key]: true }), {});
-      contract = warp.contract(contractId).setEvaluationOptions(evaluationOptions);
-    } else {
-      contract = warp.contract(contractId);
-    }
-
+    contract = getContract(cmdOptions, warp, contractId, false);
     load = loader('Loading state...');
+
     const { cachedValue } = await contract.readState();
     load.stop();
-
     let readStateObj: { state: {}; validity?: {}; errorMessages?: {} } = { state: {} };
     if (cmdOptions.save) {
       const saveFile = typeof cmdOptions.save === 'string' ? cmdOptions.save : `state_${contractId}.json`;
-
       if (!cmdOptions.validity && !cmdOptions.errorMessages) {
         fs.writeFileSync(saveFile, JSON.stringify(cachedValue.state, null, 2));
       } else {
@@ -63,4 +60,20 @@ const getStateObj = (readStateObj: any, cachedValue: any, cmdOptions: any) => {
     readStateObj.errorMessages = cachedValue.errorMessages;
   }
   return readStateObj;
+};
+
+export const getContract = (cmdOptions: CmdOptions, warp: Warp, contractId: string, connect: boolean, wallet?: any) => {
+  if (cmdOptions.evaluationOptions) {
+    const evaluationOptionsList = cmdOptions.evaluationOptions.filter((option: string) =>
+      ['allowBigInt', 'allowUnsafeClient', 'internalWrites'].includes(option)
+    );
+    const evaluationOptions = evaluationOptionsList.reduce((o: any, key: string) => ({ ...o, [key]: true }), {});
+    const contract = warp.contract(contractId).setEvaluationOptions(evaluationOptions);
+    connect && contract.connect(wallet);
+    return contract;
+  } else {
+    const contract = warp.contract(contractId);
+    connect && contract.connect(wallet);
+    return contract;
+  }
 };

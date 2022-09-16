@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.readState = void 0;
+exports.getContract = exports.readState = void 0;
 const chalk_1 = __importDefault(require("chalk"));
 const warp_contracts_1 = require("warp-contracts");
 const utils_1 = require("../utils/utils");
@@ -16,14 +16,7 @@ const readState = async (contractId, cmdOptions, options) => {
         const warp = (0, utils_1.getWarp)(env, options.cacheLocation);
         console.log(utils_1.chalkBlue.bold(`👽 [INFO]:`), `Initializing Warp in`, utils_1.chalkBlue.bold(`${env}`), 'environment.');
         let contract;
-        if (cmdOptions.evaluationOptions) {
-            const evaluationOptionsList = cmdOptions.evaluationOptions.filter((option) => ['allowBigInt', 'allowUnsafeClient', 'internalWrites'].includes(option));
-            const evaluationOptions = evaluationOptionsList.reduce((o, key) => ({ ...o, [key]: true }), {});
-            contract = warp.contract(contractId).setEvaluationOptions(evaluationOptions);
-        }
-        else {
-            contract = warp.contract(contractId);
-        }
+        contract = (0, exports.getContract)(cmdOptions, warp, contractId, false);
         load = (0, utils_1.loader)('Loading state...');
         const { cachedValue } = await contract.readState();
         load.stop();
@@ -68,4 +61,19 @@ const getStateObj = (readStateObj, cachedValue, cmdOptions) => {
     }
     return readStateObj;
 };
+const getContract = (cmdOptions, warp, contractId, connect, wallet) => {
+    if (cmdOptions.evaluationOptions) {
+        const evaluationOptionsList = cmdOptions.evaluationOptions.filter((option) => ['allowBigInt', 'allowUnsafeClient', 'internalWrites'].includes(option));
+        const evaluationOptions = evaluationOptionsList.reduce((o, key) => ({ ...o, [key]: true }), {});
+        const contract = warp.contract(contractId).setEvaluationOptions(evaluationOptions);
+        connect && contract.connect(wallet);
+        return contract;
+    }
+    else {
+        const contract = warp.contract(contractId);
+        connect && contract.connect(wallet);
+        return contract;
+    }
+};
+exports.getContract = getContract;
 //# sourceMappingURL=readState.js.map

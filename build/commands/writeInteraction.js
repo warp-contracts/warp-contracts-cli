@@ -7,6 +7,7 @@ exports.writeInteraction = void 0;
 const warp_contracts_1 = require("warp-contracts");
 const utils_1 = require("../utils/utils");
 const chalk_1 = __importDefault(require("chalk"));
+const readState_1 = require("./readState");
 const writeInteraction = async (contractId, interaction, cmdOptions, options) => {
     const env = options.environment;
     let load;
@@ -15,7 +16,8 @@ const writeInteraction = async (contractId, interaction, cmdOptions, options) =>
         const warp = (0, utils_1.getWarp)(env, options.cacheLocation);
         console.log(utils_1.chalkBlue.bold(`👽 [INFO]:`), `Initializing Warp in`, utils_1.chalkBlue.bold(`${env}`), 'environment.');
         const [wallet] = await (0, utils_1.loadWallet)(warp, env, options.wallet);
-        const contract = warp.contract(contractId).connect(wallet);
+        let contract;
+        contract = (0, readState_1.getContract)(cmdOptions, warp, contractId, true, wallet);
         load = (0, utils_1.loader)('Writing interaction...');
         console.log(JSON.parse(interaction));
         const result = await contract.writeInteraction(JSON.parse(interaction), cmdOptions.strict && { strict: true });
