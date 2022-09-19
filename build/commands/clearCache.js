@@ -7,11 +7,23 @@ exports.clearCache = void 0;
 const fs_1 = __importDefault(require("fs"));
 const chalk_1 = __importDefault(require("chalk"));
 const utils_1 = require("../utils/utils");
+const inquirer_1 = __importDefault(require("inquirer"));
 const clearCache = async (options) => {
     try {
-        const cache = options.cacheLocation.split('/', 2).join('/');
-        fs_1.default.rmSync(process.cwd() + cache, { recursive: true, force: true });
-        console.log(utils_1.chalkGreen.bold(`🍭 [SUCCESS]:`), `Cache cleared correctly.`);
+        inquirer_1.default
+            .prompt([
+            {
+                type: 'confirm',
+                name: 'clearCache',
+                message: `Are you sure you want to clear following location: ${process.cwd() + options.cacheLocation}?`
+            }
+        ])
+            .then((answers) => {
+            if (answers.clearCache == true) {
+                fs_1.default.rmSync(process.cwd() + options.cacheLocation, { recursive: true, force: true });
+                console.log(utils_1.chalkGreen.bold(`🍭 [SUCCESS]:`), `Cache cleared correctly.`);
+            }
+        });
     }
     catch (err) {
         console.error(chalk_1.default.red.bold(`💣 [ERROR]:`), `Error while clearing cache: ${err.message} `);

@@ -16,6 +16,7 @@
     "@types/commander": "^2.12.2",
     "@types/figlet": "^1.5.5",
     "@types/inquirer": "^9.0.1",
+    "@types/mime-types": "^2.1.1",
     "@types/node": "^18.7.15",
     "@typescript-eslint/eslint-plugin": "^5.0.0",
     "@typescript-eslint/parser": "^5.37.0",
@@ -42,6 +43,7 @@
     "g": "^2.0.1",
     "inquirer": "8.2.3",
     "loading-cli": "^1.1.0",
+    "mime-types": "^2.1.35",
     "nano": "^10.0.0",
     "semver": "^7.3.7",
     "warp-contracts": "1.2.5"

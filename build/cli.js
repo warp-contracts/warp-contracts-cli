@@ -28,7 +28,7 @@ const viewState_1 = require("./commands/viewState");
         .option('-wlt, --wallet <string>', 'Path to the wallet keyfile (e.g.: ./secrets/wallet.json)')
         .option('-env --environment <string>', 'Envrionment in which action needs to be executed: local | testnet | mainnet', 'mainnet')
         .option('-lvl --level <string>', 'Logging level: silly | trace | debug | info | warn | error | fatal | none', 'none')
-        .option('-c --cacheLocation <string>', 'Realtive path to the Level database location', '/cache/warp')
+        .option('-c --cacheLocation <string>', 'Realtive path for the Level database location', '/cache/warp')
         .version((0, child_process_1.execSync)('npm view warp-contracts version').toString().replace('\n', ''), '-v, --version', 'Display current version of Warp SDK');
     program
         .command('deploy')
@@ -52,7 +52,7 @@ const viewState_1 = require("./commands/viewState");
         .description('Write interaction to the contract based on specified contract id')
         .argument('<contractId>', 'id of the contract')
         .argument('<interaction>', 'interaction object passed to the writeInteraction method')
-        .option('-str --strict', 'when set - methods evaluate the state and lets verify wether transaction has been processed correctly', false)
+        .option('-str --strict', 'if set, writeInteraction method evaluates the state and lets verify wether transaction has been processed correctly', false)
         .option('-eo --evaluationOptions <options...>', 'Specify evaluation options: allowBigInt | allowUnsafeClient | internalWrites')
         .action((contractId, interaction, cmdOptions) => {
         (0, writeInteraction_1.writeInteraction)(contractId, interaction, cmdOptions, options);

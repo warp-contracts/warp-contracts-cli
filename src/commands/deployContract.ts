@@ -5,6 +5,7 @@ import { ContractDeploy, LoggerFactory, LogLevel } from 'warp-contracts';
 import chalk from 'chalk';
 import inquirer from 'inquirer';
 import { OptionValues } from 'commander';
+import mime from 'mime-types';
 
 export const deployContract = async (options: OptionValues) => {
   const env = options.environment;
@@ -27,9 +28,10 @@ const deployFunc = async (
   sourceTxId: string,
   wasmSrc: string,
   wasmGlueCode: string,
-  load: any
+  load: any,
+  dataType: string,
+  dataBody: any
 ) => {
-  console.log(sourceFile, wasmSrc, wasmGlueCode);
   LoggerFactory.INST.logLevel(options.level);
   console.log(chalkBlue.bold(`👽 [INFO]:`), `Initializing Warp in`, chalkBlue.bold(`${env}`), 'environment.');
   const warp = getWarp(env, options.cacheLocation);
@@ -38,7 +40,11 @@ const deployFunc = async (
   let contractSrc: any = null;
   let deployment: ContractDeploy;
   load = loader('Deploying contract...');
-
+  const body = dataBody
+    ? mime.charset(dataType) == 'UTF-8'
+      ? fs.readFileSync(path.resolve(dataBody), 'utf-8')
+      : fs.readFileSync(path.resolve(dataBody))
+    : null;
   if (sourceFile) {
     contractSrc = wasmSrc
       ? fs.readFileSync(path.resolve(sourceFile))
@@ -48,13 +54,20 @@ const deployFunc = async (
       initState: JSON.stringify(initialState),
       src: contractSrc,
       ...(wasmSrc && { wasmSrcCodeDir: path.resolve(wasmSrc) }),
-      ...(wasmGlueCode && { wasmGlueCode: path.resolve(wasmGlueCode) })
+      ...(wasmGlueCode && { wasmGlueCode: path.resolve(wasmGlueCode) }),
+      ...(dataType && {
+        data: {
+          'Content-Type': dataType,
+          body
+        }
+      })
     });
   } else if (sourceTxId) {
     deployment = await warp.createContract.deployFromSourceTx({
       wallet,
       initState: JSON.stringify(initialState),
-      srcTxId: sourceTxId
+      srcTxId: sourceTxId,
+      ...(dataType && { data: { 'Content-Type': dataType, body } })
     });
   }
 
@@ -70,6 +83,11 @@ const deployFunc = async (
         : ''
     }`
   );
+  env == 'mainnet' &&
+    dataBody &&
+    console.log(
+      `View contract data: https://d1o5nlqr4okus2.cloudfront.net/gateway/contract-data/${deployment.contractTxId}`
+    );
 };
 
 const deployPrompt = async (deployFunc: any, options: OptionValues, env: string, load: any) => {
@@ -127,11 +145,59 @@ const deployPrompt = async (deployFunc: any, options: OptionValues, env: string,
                           type: 'input',
                           name: 'wasmGlueCode',
                           message: 'Provide relative path to the WASM glue code (e.g.: ./pkg/contract.js)'
+                        },
+                        {
+                          type: 'confirm',
+                          name: 'dataConfirm',
+                          message: 'Would you like to send data asset within your contract (e.g. to create AtomicNFT)?'
                         }
                       ])
                       .then(async (answers) => {
-                        const { sourceFile, initialState, wasmSrc, wasmGlueCode } = answers;
-                        await deployFunc(options, env, initialState, sourceFile, null, wasmSrc, wasmGlueCode, load);
+                        if (answers.dataConfirm == true) {
+                          inquirer
+                            .prompt([
+                              {
+                                type: 'input',
+                                name: 'dataType',
+                                message: 'Provide data type (e.g.: image/png)'
+                              },
+                              {
+                                type: 'input',
+                                name: 'dataBody',
+                                message: 'Provide relative path to body of your data (e.g.: /path-to-data/image.png)'
+                              }
+                            ])
+                            .then(async (answers2) => {
+                              const { dataType, dataBody } = answers2;
+                              const { sourceFile, initialState, wasmSrc, wasmGlueCode } = answers;
+                              await deployFunc(
+                                options,
+                                env,
+                                initialState,
+                                sourceFile,
+                                null,
+                                wasmSrc,
+                                wasmGlueCode,
+                                load,
+                                dataType,
+                                dataBody
+                              );
+                            });
+                        } else {
+                          const { sourceFile, initialState, wasmSrc, wasmGlueCode } = answers;
+                          await deployFunc(
+                            options,
+                            env,
+                            initialState,
+                            sourceFile,
+                            null,
+                            wasmSrc,
+                            wasmGlueCode,
+                            load,
+                            null,
+                            null
+                          );
+                        }
                       });
                   } else if (answers.wasmLang == 'Assemblyscript' || answers.wasmLang == 'Go') {
                     inquirer
@@ -150,11 +216,59 @@ const deployPrompt = async (deployFunc: any, options: OptionValues, env: string,
                           type: 'input',
                           name: 'wasmSrc',
                           message: 'Provide relative path to the WASM source folder (e.g.: ./src)'
+                        },
+                        {
+                          type: 'confirm',
+                          name: 'dataConfirm',
+                          message: 'Would you like to send data asset within your contract (e.g. to create AtomicNFT)?'
                         }
                       ])
                       .then(async (answers) => {
-                        const { sourceFile, initialState, wasmSrc } = answers;
-                        await deployFunc(options, env, initialState, sourceFile, null, wasmSrc, null, load);
+                        if (answers.dataConfirm == true) {
+                          inquirer
+                            .prompt([
+                              {
+                                type: 'input',
+                                name: 'dataType',
+                                message: 'Provide data type (e.g.: image/png)'
+                              },
+                              {
+                                type: 'input',
+                                name: 'dataBody',
+                                message: 'Provide relative path to body of your data (e.g.: /path-to-data/image.png)'
+                              }
+                            ])
+                            .then(async (answers2) => {
+                              const { dataType, dataBody } = answers2;
+                              const { sourceFile, initialState, wasmSrc } = answers;
+                              await deployFunc(
+                                options,
+                                env,
+                                initialState,
+                                sourceFile,
+                                null,
+                                wasmSrc,
+                                null,
+                                load,
+                                dataType,
+                                dataBody
+                              );
+                            });
+                        } else {
+                          const { sourceFile, initialState, wasmSrc, wasmGlueCode } = answers;
+                          await deployFunc(
+                            options,
+                            env,
+                            initialState,
+                            sourceFile,
+                            null,
+                            wasmSrc,
+                            wasmGlueCode,
+                            load,
+                            null,
+                            null
+                          );
+                        }
                       });
                   }
                 });
@@ -170,11 +284,59 @@ const deployPrompt = async (deployFunc: any, options: OptionValues, env: string,
                     type: 'input',
                     name: 'initialState',
                     message: 'Provide relative path to the initial state file (e.g.: ./state.json)'
+                  },
+                  {
+                    type: 'confirm',
+                    name: 'dataConfirm',
+                    message: 'Would you like to send data asset within your contract (e.g. to create AtomicNFT)?'
                   }
                 ])
                 .then(async (answers) => {
-                  const { sourceFile, initialState } = answers;
-                  await deployFunc(options, env, initialState, sourceFile, null, null, null, load);
+                  if (answers.dataConfirm == true) {
+                    inquirer
+                      .prompt([
+                        {
+                          type: 'input',
+                          name: 'dataType',
+                          message: 'Provide data type (e.g.: image/png)'
+                        },
+                        {
+                          type: 'input',
+                          name: 'dataBody',
+                          message: 'Provide relative path to body of your data (e.g.: /path-to-data/image.png)'
+                        }
+                      ])
+                      .then(async (answers2) => {
+                        const { dataType, dataBody } = answers2;
+                        const { sourceFile, initialState } = answers;
+                        await deployFunc(
+                          options,
+                          env,
+                          initialState,
+                          sourceFile,
+                          null,
+                          null,
+                          null,
+                          load,
+                          dataType,
+                          dataBody
+                        );
+                      });
+                  } else {
+                    const { sourceFile, initialState, wasmSrc, wasmGlueCode } = answers;
+                    await deployFunc(
+                      options,
+                      env,
+                      initialState,
+                      sourceFile,
+                      null,
+                      wasmSrc,
+                      wasmGlueCode,
+                      load,
+                      null,
+                      null
+                    );
+                  }
                 });
             }
           });
@@ -190,11 +352,36 @@ const deployPrompt = async (deployFunc: any, options: OptionValues, env: string,
               type: 'input',
               name: 'initialState',
               message: 'Provide relative path to the initial state file (e.g.: ./state.json)'
+            },
+            {
+              type: 'confirm',
+              name: 'dataConfirm',
+              message: 'Would you like to send data asset within your contract (e.g. to create AtomicNFT)?'
             }
           ])
           .then(async (answers) => {
-            const { sourceTxId, initialState } = answers;
-            await deployFunc(options, env, initialState, null, sourceTxId, null, null, load);
+            if (answers.dataConfirm == true) {
+              inquirer
+                .prompt([
+                  {
+                    type: 'input',
+                    name: 'dataType',
+                    message: 'Provide data type (e.g.: image/png)'
+                  },
+                  {
+                    type: 'input',
+                    name: 'dataBody',
+                    message: 'Provide relative path to body of your data (e.g.: /path-to-data/image.png)'
+                  }
+                ])
+                .then(async (answers) => {
+                  const { sourceTxId, initialState, dataType, dataBody } = answers;
+                  await deployFunc(options, env, initialState, null, sourceTxId, null, null, load, dataType, dataBody);
+                });
+            } else {
+              const { sourceTxId, initialState, wasmSrc, wasmGlueCode } = answers;
+              await deployFunc(options, env, initialState, null, sourceTxId, wasmSrc, wasmGlueCode, load, null, null);
+            }
           });
       }
     })
