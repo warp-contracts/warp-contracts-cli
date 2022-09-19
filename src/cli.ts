@@ -38,7 +38,7 @@ import { viewState } from './commands/viewState';
       'Logging level: silly | trace | debug | info | warn | error | fatal | none',
       'none'
     )
-    .option('-c --cacheLocation <string>', 'Realtive path to the Level database location', '/cache/warp')
+    .option('-c --cacheLocation <string>', 'Realtive path for the Level database location', '/cache/warp')
     .version(
       execSync('npm view warp-contracts version').toString().replace('\n', ''),
       '-v, --version',
@@ -77,7 +77,7 @@ import { viewState } from './commands/viewState';
     .argument('<interaction>', 'interaction object passed to the writeInteraction method')
     .option(
       '-str --strict',
-      'when set - methods evaluate the state and lets verify wether transaction has been processed correctly',
+      'if set, writeInteraction method evaluates the state and lets verify wether transaction has been processed correctly',
       false
     )
     .option(
