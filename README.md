@@ -50,7 +50,7 @@ Commands:
 
 ### Deploy
 
-Executes deploying contract creator which asks user wether the contract will be deployed from file or from source transaction id and questions for the type of the contract (WASM or Javascript), if WASM is chosen, it then asks for the specific language in which contract is written (Rust, Assemlbyscript or Go). Lastly, user needs to provide source transaction id or path to the source file, path to the initial state file, path to the WASM source file (in case of WASM contracts) and path to the WASM glu code (in case of Rust contracts).
+Executes deploying contract creator which asks user wether the contract will be deployed from file or from source transaction id and questions for the type of the contract (WASM or Javascript), if WASM is chosen, it then asks for the specific language in which contract is written (Rust, Assemlbyscript or Go). Lastly, user needs to provide source transaction id or path to the source file, path to the initial state file, path to the WASM source file (in case of WASM contracts) and path to the WASM glue code (in case of Rust contracts). It is possible to upload data within the contract (e.g. in case of deploying Atomic NFT contract) which will be put in a data field of the contract transaction - in that case user needs to provide type of data (e.g. `image/png`) and relative path to the data asset. 
 
 Contract is then deployed, its id is returned to the user and SonAr link is provided (for testnet and mainnet environment).
 
