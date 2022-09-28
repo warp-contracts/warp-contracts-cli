@@ -46,7 +46,7 @@
     "mime-types": "^2.1.35",
     "nano": "^10.0.0",
     "semver": "^7.3.7",
-    "warp-contracts": "1.2.5"
+    "warp-contracts": "1.2.12"
   },
   "bin": {
     "warp": "./build/cli.js"
