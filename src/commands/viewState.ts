@@ -2,8 +2,9 @@ import { LoggerFactory, LogLevel } from 'warp-contracts';
 import { chalkBlue, chalkGreen, getWarp, loader, loadWallet } from '../utils/utils';
 import chalk from 'chalk';
 import { OptionValues } from 'commander';
+import { getContract } from './readState';
 
-export const viewState = async (contractId: string, interaction: string, cmdOptions: OptionValues, options: OptionValues) => {
+export const viewState = async (contractId: string, interaction: string, cmdOptions: any, options: OptionValues) => {
   const { environment, level, cacheLocation, wallet: walletPath } = options;
   let load: any;
   try {
@@ -13,7 +14,7 @@ export const viewState = async (contractId: string, interaction: string, cmdOpti
     console.log(chalkBlue.bold(`👽 [INFO]:`), `Initializing Warp in`, chalkBlue.bold(`${environment}`), 'environment.');
     const [wallet] = await loadWallet(warp, environment, walletPath);
 
-    const contract = warp.contract(contractId).connect(wallet);
+    const contract = getContract(cmdOptions, warp, contractId, true, wallet);
 
     load = loader('Viewing state...');
     const result = await contract.viewState(JSON.parse(interaction));
