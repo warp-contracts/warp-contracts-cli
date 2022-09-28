@@ -35,12 +35,12 @@ const readState = async (contractId, cmdOptions, options) => {
         else {
             if (!cmdOptions.validity && !cmdOptions.errorMessages) {
                 console.log(utils_1.chalkGreen.bold(`🍭 [SUCCESS]:`), `State for`, (0, utils_1.chalkGreen)(`${contractId}:`));
-                console.dir(cachedValue.state);
+                console.dir(cachedValue.state, { depth: null });
             }
             else {
                 readStateObj = getStateObj(readStateObj, cachedValue, cmdOptions);
                 console.log(utils_1.chalkGreen.bold(`🍭 [SUCCESS]:`), `State for`, (0, utils_1.chalkGreen)(`${contractId}:`));
-                console.dir(readStateObj);
+                console.dir(readStateObj, { depth: null });
             }
         }
     }

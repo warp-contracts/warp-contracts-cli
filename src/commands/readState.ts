@@ -37,11 +37,11 @@ export const readState = async (contractId: string, cmdOptions: CmdOptions, opti
     } else {
       if (!cmdOptions.validity && !cmdOptions.errorMessages) {
         console.log(chalkGreen.bold(`🍭 [SUCCESS]:`), `State for`, chalkGreen(`${contractId}:`));
-        console.dir(cachedValue.state);
+        console.dir(cachedValue.state, { depth: null });
       } else {
         readStateObj = getStateObj(readStateObj, cachedValue, cmdOptions);
         console.log(chalkGreen.bold(`🍭 [SUCCESS]:`), `State for`, chalkGreen(`${contractId}:`));
-        console.dir(readStateObj);
+        console.dir(readStateObj, { depth: null });
       }
     }
   } catch (err) {

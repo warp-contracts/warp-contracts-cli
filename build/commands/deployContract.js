@@ -133,6 +133,7 @@ const deployPrompt = async (deployFunc, options, env, load) => {
                                 {
                                     type: 'confirm',
                                     name: 'dataConfirm',
+                                    default: false,
                                     message: 'Would you like to send data asset within your contract (e.g. to create AtomicNFT)?'
                                 }
                             ])
@@ -184,6 +185,7 @@ const deployPrompt = async (deployFunc, options, env, load) => {
                                 {
                                     type: 'confirm',
                                     name: 'dataConfirm',
+                                    default: false,
                                     message: 'Would you like to send data asset within your contract (e.g. to create AtomicNFT)?'
                                 }
                             ])
@@ -232,6 +234,7 @@ const deployPrompt = async (deployFunc, options, env, load) => {
                         {
                             type: 'confirm',
                             name: 'dataConfirm',
+                            default: false,
                             message: 'Would you like to send data asset within your contract (e.g. to create AtomicNFT)?'
                         }
                     ])
@@ -280,6 +283,7 @@ const deployPrompt = async (deployFunc, options, env, load) => {
                 {
                     type: 'confirm',
                     name: 'dataConfirm',
+                    default: false,
                     message: 'Would you like to send data asset within your contract (e.g. to create AtomicNFT)?'
                 }
             ])

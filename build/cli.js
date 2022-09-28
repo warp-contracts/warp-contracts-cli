@@ -62,6 +62,7 @@ const viewState_1 = require("./commands/viewState");
         .description('View state of the contract based on specified contract id and provided input')
         .argument('<contractId>', 'id of the contract')
         .argument('<input>', 'input object passed to the viewState method')
+        .option('-eo --evaluationOptions <options...>', 'Specify evaluation options: allowBigInt | allowUnsafeClient | internalWrites')
         .action((contractId, interaction, cmdOptions) => {
         (0, viewState_1.viewState)(contractId, interaction, cmdOptions, options);
     });
