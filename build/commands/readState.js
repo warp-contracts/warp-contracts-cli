@@ -10,16 +10,18 @@ const utils_1 = require("../utils/utils");
 const fs_1 = __importDefault(require("fs"));
 const readState = async (contractId, cmdOptions, options) => {
     const env = options.environment;
+    const silent = options.silent;
     let load;
     try {
         warp_contracts_1.LoggerFactory.INST.logLevel(options.level);
         const warp = (0, utils_1.getWarp)(env, options.cacheLocation);
-        console.log(utils_1.chalkBlue.bold(`👽 [INFO]:`), `Initializing Warp in`, utils_1.chalkBlue.bold(`${env}`), 'environment.');
+        !silent &&
+            console.log(utils_1.chalkBlue.bold(`👽 [INFO]:`), `Initializing Warp in`, utils_1.chalkBlue.bold(`${env}`), 'environment.');
         let contract;
         contract = (0, exports.getContract)(cmdOptions, warp, contractId, false);
-        load = (0, utils_1.loader)('Loading state...');
+        load = !silent && (0, utils_1.loader)('Loading state...');
         const { cachedValue } = await contract.readState();
-        load.stop();
+        !silent && load.stop();
         let readStateObj = { state: {} };
         if (cmdOptions.save) {
             const saveFile = typeof cmdOptions.save === 'string' ? cmdOptions.save : `state_${contractId}.json`;
@@ -30,17 +32,19 @@ const readState = async (contractId, cmdOptions, options) => {
                 readStateObj = getStateObj(readStateObj, cachedValue, cmdOptions);
                 fs_1.default.writeFileSync(saveFile, JSON.stringify(readStateObj, null, 2));
             }
-            console.log(`${utils_1.chalkGreen.bold(`🍭 [SUCCESS]:`)} State saved in: ${(0, utils_1.chalkBlue)(saveFile)} file.`);
+            !silent && console.log(`${utils_1.chalkGreen.bold(`🍭 [SUCCESS]:`)} State saved in: ${(0, utils_1.chalkBlue)(saveFile)} file.`);
         }
         else {
             if (!cmdOptions.validity && !cmdOptions.errorMessages) {
-                console.log(utils_1.chalkGreen.bold(`🍭 [SUCCESS]:`), `State for`, (0, utils_1.chalkGreen)(`${contractId}:`));
-                console.dir(cachedValue.state);
+                !silent && console.log(utils_1.chalkGreen.bold(`🍭 [SUCCESS]:`), `State for`, (0, utils_1.chalkGreen)(`${contractId}:`));
+                silent
+                    ? process.stdout.write(JSON.stringify(cachedValue.state))
+                    : console.dir(cachedValue.state, { depth: null });
             }
             else {
                 readStateObj = getStateObj(readStateObj, cachedValue, cmdOptions);
-                console.log(utils_1.chalkGreen.bold(`🍭 [SUCCESS]:`), `State for`, (0, utils_1.chalkGreen)(`${contractId}:`));
-                console.dir(readStateObj);
+                !silent && console.log(utils_1.chalkGreen.bold(`🍭 [SUCCESS]:`), `State for`, (0, utils_1.chalkGreen)(`${contractId}:`));
+                silent ? process.stdout.write(JSON.stringify(readStateObj)) : console.dir(readStateObj, { depth: null });
             }
         }
     }

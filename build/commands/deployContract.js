@@ -18,21 +18,23 @@ const deployContract = async (options) => {
         await deployPrompt(deployFunc, options, env, load);
     }
     catch (err) {
-        load.stop();
+        !options.silent && load.stop();
         console.error(chalk_1.default.red.bold(`💣 [ERROR]:`), `Error while deploying contract: ${err.message} `);
         return;
     }
 };
 exports.deployContract = deployContract;
 const deployFunc = async (options, env, state, sourceFile, sourceTxId, wasmSrc, wasmGlueCode, load, dataType, dataBody) => {
+    const silent = options.silent;
     warp_contracts_1.LoggerFactory.INST.logLevel(options.level);
-    console.log(utils_1.chalkBlue.bold(`👽 [INFO]:`), `Initializing Warp in`, utils_1.chalkBlue.bold(`${env}`), 'environment.');
+    !silent &&
+        console.log(utils_1.chalkBlue.bold(`👽 [INFO]:`), `Initializing Warp in`, utils_1.chalkBlue.bold(`${env}`), 'environment.');
     const warp = (0, utils_1.getWarp)(env, options.cacheLocation);
-    const [wallet] = await (0, utils_1.loadWallet)(warp, env, options.wallet);
+    const [wallet] = await (0, utils_1.loadWallet)(warp, env, options);
     const initialState = fs_1.default.readFileSync(path_1.default.resolve(state), 'utf8');
     let contractSrc = null;
     let deployment;
-    load = (0, utils_1.loader)('Deploying contract...');
+    load = !silent && (0, utils_1.loader)('Deploying contract...');
     const body = dataBody
         ? mime_types_1.default.charset(dataType) == 'UTF-8'
             ? fs_1.default.readFileSync(path_1.default.resolve(dataBody), 'utf-8')
@@ -64,13 +66,15 @@ const deployFunc = async (options, env, state, sourceFile, sourceTxId, wasmSrc, 
             ...(dataType && { data: { 'Content-Type': dataType, body } })
         });
     }
-    load.stop();
-    console.log(utils_1.chalkGreen.bold(`🍭 [SUCCESS]:`), `Contract deployed correctly. Contract:`);
-    console.dir(deployment);
-    console.log(`${env == 'mainnet' || env == 'testnet'
-        ? `View contract in SonAr: ${`https://sonar.warp.cc/#/app/contract/${deployment.contractTxId}${env == 'testnet' ? '?network=testnet' : ''}`}`
-        : ''}`);
-    env == 'mainnet' &&
+    !silent && load.stop();
+    !silent && console.log(utils_1.chalkGreen.bold(`🍭 [SUCCESS]:`), `Contract deployed correctly. Contract:`);
+    silent ? process.stdout.write(JSON.stringify(deployment)) : console.dir(deployment);
+    !silent &&
+        console.log(`${env == 'mainnet' || env == 'testnet'
+            ? `View contract in SonAr: ${`https://sonar.warp.cc/#/app/contract/${deployment.contractTxId}${env == 'testnet' ? '?network=testnet' : ''}`}`
+            : ''}`);
+    !silent &&
+        env == 'mainnet' &&
         dataBody &&
         console.log(`View contract data: https://d1o5nlqr4okus2.cloudfront.net/gateway/contract-data/${deployment.contractTxId}`);
 };
@@ -133,6 +137,7 @@ const deployPrompt = async (deployFunc, options, env, load) => {
                                 {
                                     type: 'confirm',
                                     name: 'dataConfirm',
+                                    default: false,
                                     message: 'Would you like to send data asset within your contract (e.g. to create AtomicNFT)?'
                                 }
                             ])
@@ -184,6 +189,7 @@ const deployPrompt = async (deployFunc, options, env, load) => {
                                 {
                                     type: 'confirm',
                                     name: 'dataConfirm',
+                                    default: false,
                                     message: 'Would you like to send data asset within your contract (e.g. to create AtomicNFT)?'
                                 }
                             ])
@@ -232,6 +238,7 @@ const deployPrompt = async (deployFunc, options, env, load) => {
                         {
                             type: 'confirm',
                             name: 'dataConfirm',
+                            default: false,
                             message: 'Would you like to send data asset within your contract (e.g. to create AtomicNFT)?'
                         }
                     ])
@@ -280,6 +287,7 @@ const deployPrompt = async (deployFunc, options, env, load) => {
                 {
                     type: 'confirm',
                     name: 'dataConfirm',
+                    default: false,
                     message: 'Would you like to send data asset within your contract (e.g. to create AtomicNFT)?'
                 }
             ])

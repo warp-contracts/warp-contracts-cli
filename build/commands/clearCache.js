@@ -21,7 +21,7 @@ const clearCache = async (options) => {
             .then((answers) => {
             if (answers.clearCache == true) {
                 fs_1.default.rmSync(process.cwd() + options.cacheLocation, { recursive: true, force: true });
-                console.log(utils_1.chalkGreen.bold(`🍭 [SUCCESS]:`), `Cache cleared correctly.`);
+                !options.silent && console.log(utils_1.chalkGreen.bold(`🍭 [SUCCESS]:`), `Cache cleared correctly.`);
             }
         });
     }
