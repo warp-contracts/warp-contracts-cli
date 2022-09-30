@@ -17,7 +17,7 @@ export const clearCache = async (options: OptionValues) => {
       .then((answers) => {
         if (answers.clearCache == true) {
           fs.rmSync(process.cwd() + options.cacheLocation, { recursive: true, force: true });
-          console.log(chalkGreen.bold(`🍭 [SUCCESS]:`), `Cache cleared correctly.`);
+          !options.silent && console.log(chalkGreen.bold(`🍭 [SUCCESS]:`), `Cache cleared correctly.`);
         }
       });
   } catch (err: any) {

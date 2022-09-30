@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.loader = exports.getPackageJson = exports.findClosestPackageJson = exports.getPackageJsonPath = exports.getPackageRoot = exports.printWarningAboutNodeJsVersionIfNecessary = exports.chalkGreen = exports.chalkBlue = exports.loadWallet = exports.getWarp = void 0;
+exports.printInfo = exports.loader = exports.getPackageJson = exports.findClosestPackageJson = exports.getPackageJsonPath = exports.getPackageRoot = exports.printWarningAboutNodeJsVersionIfNecessary = exports.chalkGreen = exports.chalkBlue = exports.loadWallet = exports.getWarp = void 0;
 const warp_contracts_1 = require("warp-contracts");
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
@@ -12,6 +12,8 @@ const semver_1 = __importDefault(require("semver"));
 const fs_extra_1 = __importDefault(require("fs-extra"));
 const find_up_1 = __importDefault(require("find-up"));
 const loading_cli_1 = __importDefault(require("loading-cli"));
+const clear_1 = __importDefault(require("clear"));
+const figlet_1 = __importDefault(require("figlet"));
 const getWarp = (env, cacheLocation) => {
     const cache = process.cwd() + cacheLocation;
     if (env == 'local') {
@@ -28,13 +30,15 @@ const getWarp = (env, cacheLocation) => {
     }
 };
 exports.getWarp = getWarp;
-const loadWallet = async function (warp, env, walletPath) {
+const loadWallet = async function (warp, env, options) {
     let wallet;
     let walletDir = path_1.default.resolve('.secrets');
     let walletFilename = path_1.default.join(walletDir, `/wallet_${env}.json`);
     let load;
+    const silent = options.silent;
+    const walletPath = options.wallet;
     if (!walletPath) {
-        load = (0, exports.loader)('Generating wallet...');
+        load = !silent && (0, exports.loader)('Generating wallet...');
         if (env === 'local' || env === 'testnet') {
             ({ jwk: wallet } = await warp.testing.generateWallet());
         }
@@ -48,15 +52,16 @@ const loadWallet = async function (warp, env, walletPath) {
     else {
         try {
             wallet = JSON.parse(fs_1.default.readFileSync(path_1.default.resolve(walletPath), 'utf8'));
-            console.log((0, exports.chalkBlue)('👽 [INFO]:'), 'Wallet recognized correctly.');
+            !silent && console.log((0, exports.chalkBlue)('👽 [INFO]:'), 'Wallet recognized correctly.');
         }
         catch (e) {
             throw new Error(chalk_1.default.red('Wallet file not found!'));
         }
     }
     const address = await warp.arweave.wallets.getAddress(wallet);
-    load.stop();
-    console.log(exports.chalkBlue.bold(`👽 [INFO]:`), `Wallet:`, exports.chalkBlue.bold(`${address}`), `generated in`, exports.chalkBlue.bold(`.secrets/wallet_${env}.json.`));
+    !silent && load.stop();
+    !silent &&
+        console.log(exports.chalkBlue.bold(`👽 [INFO]:`), `Wallet:`, exports.chalkBlue.bold(`${address}`), `generated in`, exports.chalkBlue.bold(`.secrets/wallet_${env}.json.`));
     return [wallet, address];
 };
 exports.loadWallet = loadWallet;
@@ -112,4 +117,15 @@ const loader = (text) => {
     }).start();
 };
 exports.loader = loader;
+const printInfo = async () => {
+    (0, clear_1.default)();
+    const packageJson = await (0, exports.getPackageJson)();
+    (0, exports.printWarningAboutNodeJsVersionIfNecessary)(packageJson);
+    console.log((0, exports.chalkBlue)(figlet_1.default.textSync('WARP', {
+        horizontalLayout: 'full',
+        font: 'Speed'
+    })));
+    console.log((0, exports.chalkBlue)(`👾👾👾 Welcome to Warp Contracts CLI v.${packageJson.version} 👾👾👾\n`));
+};
+exports.printInfo = printInfo;
 //# sourceMappingURL=utils.js.map

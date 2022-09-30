@@ -1,5 +1,5 @@
 import chalk from 'chalk';
-import { Contract, LoggerFactory, LogLevel, Warp } from 'warp-contracts';
+import { Contract, LoggerFactory, Warp } from 'warp-contracts';
 import { chalkBlue, chalkGreen, getWarp, loader } from '../utils/utils';
 import fs from 'fs';
 import { OptionValues } from 'commander';
@@ -13,17 +13,20 @@ export interface CmdOptions {
 
 export const readState = async (contractId: string, cmdOptions: CmdOptions, options: OptionValues) => {
   const env = options.environment;
+  const silent = options.silent;
   let load: any;
   try {
     LoggerFactory.INST.logLevel(options.level);
     const warp = getWarp(env, options.cacheLocation);
-    console.log(chalkBlue.bold(`👽 [INFO]:`), `Initializing Warp in`, chalkBlue.bold(`${env}`), 'environment.');
+    !silent &&
+      console.log(chalkBlue.bold(`👽 [INFO]:`), `Initializing Warp in`, chalkBlue.bold(`${env}`), 'environment.');
+
     let contract: Contract;
     contract = getContract(cmdOptions, warp, contractId, false);
-    load = loader('Loading state...');
+    load = !silent && loader('Loading state...');
 
     const { cachedValue } = await contract.readState();
-    load.stop();
+    !silent && load.stop();
     let readStateObj: { state: {}; validity?: {}; errorMessages?: {} } = { state: {} };
     if (cmdOptions.save) {
       const saveFile = typeof cmdOptions.save === 'string' ? cmdOptions.save : `state_${contractId}.json`;
@@ -33,15 +36,17 @@ export const readState = async (contractId: string, cmdOptions: CmdOptions, opti
         readStateObj = getStateObj(readStateObj, cachedValue, cmdOptions);
         fs.writeFileSync(saveFile, JSON.stringify(readStateObj, null, 2));
       }
-      console.log(`${chalkGreen.bold(`🍭 [SUCCESS]:`)} State saved in: ${chalkBlue(saveFile)} file.`);
+      !silent && console.log(`${chalkGreen.bold(`🍭 [SUCCESS]:`)} State saved in: ${chalkBlue(saveFile)} file.`);
     } else {
       if (!cmdOptions.validity && !cmdOptions.errorMessages) {
-        console.log(chalkGreen.bold(`🍭 [SUCCESS]:`), `State for`, chalkGreen(`${contractId}:`));
-        console.dir(cachedValue.state, { depth: null });
+        !silent && console.log(chalkGreen.bold(`🍭 [SUCCESS]:`), `State for`, chalkGreen(`${contractId}:`));
+        silent
+          ? process.stdout.write(JSON.stringify(cachedValue.state))
+          : console.dir(cachedValue.state, { depth: null });
       } else {
         readStateObj = getStateObj(readStateObj, cachedValue, cmdOptions);
-        console.log(chalkGreen.bold(`🍭 [SUCCESS]:`), `State for`, chalkGreen(`${contractId}:`));
-        console.dir(readStateObj, { depth: null });
+        !silent && console.log(chalkGreen.bold(`🍭 [SUCCESS]:`), `State for`, chalkGreen(`${contractId}:`));
+        silent ? process.stdout.write(JSON.stringify(readStateObj)) : console.dir(readStateObj, { depth: null });
       }
     }
   } catch (err) {

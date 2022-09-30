@@ -1,31 +1,15 @@
 #!/usr/bin/env node
 import { Command } from 'commander';
-import clear from 'clear';
-import figlet from 'figlet';
 import { deployContract } from './commands/deployContract';
 import { readState } from './commands/readState';
 import { writeInteraction } from './commands/writeInteraction';
-import { chalkBlue, getPackageJson, printWarningAboutNodeJsVersionIfNecessary } from './utils/utils';
+import { printInfo } from './utils/utils';
 import { clearCache } from './commands/clearCache';
 import { execSync } from 'child_process';
 import { viewState } from './commands/viewState';
 
 (async () => {
   const program = new Command();
-  clear();
-
-  const packageJson = await getPackageJson();
-  printWarningAboutNodeJsVersionIfNecessary(packageJson);
-  console.log(
-    chalkBlue(
-      figlet.textSync('WARP', {
-        horizontalLayout: 'full',
-        font: 'Speed'
-      })
-    )
-  );
-
-  console.log(chalkBlue(`👾👾👾 Welcome to Warp Contracts CLI v.${packageJson.version} 👾👾👾\n`));
   program
     .option('-wlt, --wallet <string>', 'Path to the wallet keyfile (e.g.: ./secrets/wallet.json)')
     .option(
@@ -39,16 +23,24 @@ import { viewState } from './commands/viewState';
       'none'
     )
     .option('-c --cacheLocation <string>', 'Realtive path for the Level database location', '/cache/warp')
+    .option(
+      '-sil --silent',
+      'Run CLI in silent mode (no logo, only error messages displayed, logged result not formatted)'
+    )
     .version(
       execSync('npm view warp-contracts version').toString().replace('\n', ''),
       '-v, --version',
       'Display current version of Warp SDK'
     );
+  const options = program.opts();
 
   program
     .command('deploy')
     .description('Deploy contract')
-    .action(() => {
+    .action(async () => {
+      if (options.silent !== true) {
+        await printInfo();
+      }
       deployContract(options);
     });
 
@@ -66,7 +58,10 @@ import { viewState } from './commands/viewState';
     )
     .option('-stval --stateValidity', 'Beside the state object, return validity object')
     .option('-sterr --stateErrorMessages', 'Beside the state object, return errorMessages object')
-    .action((contractId, cmdOptions) => {
+    .action(async (contractId, cmdOptions) => {
+      if (options.silent !== true) {
+        await printInfo();
+      }
       readState(contractId, cmdOptions, options);
     });
 
@@ -84,7 +79,10 @@ import { viewState } from './commands/viewState';
       '-eo --evaluationOptions <options...>',
       'Specify evaluation options: allowBigInt | allowUnsafeClient | internalWrites'
     )
-    .action((contractId, interaction, cmdOptions) => {
+    .action(async (contractId, interaction, cmdOptions) => {
+      if (options.silent !== true) {
+        await printInfo();
+      }
       writeInteraction(contractId, interaction, cmdOptions, options);
     });
 
@@ -97,7 +95,10 @@ import { viewState } from './commands/viewState';
       '-eo --evaluationOptions <options...>',
       'Specify evaluation options: allowBigInt | allowUnsafeClient | internalWrites'
     )
-    .action((contractId, interaction, cmdOptions) => {
+    .action(async (contractId, interaction, cmdOptions) => {
+      if (options.silent !== true) {
+        await printInfo();
+      }
       viewState(contractId, interaction, cmdOptions, options);
     });
 
@@ -108,7 +109,12 @@ import { viewState } from './commands/viewState';
       clearCache(options);
     });
 
-  const options = program.opts();
-  if (options.debug) console.log(options);
-  program.parse(process.argv);
+  if (process.argv.length == 2) {
+    await printInfo();
+  }
+  try {
+    program.parse();
+  } catch (e) {
+    console.log(e);
+  }
 })();
