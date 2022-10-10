@@ -16,7 +16,7 @@ const viewState_1 = require("./commands/viewState");
         .option('-env --environment <string>', 'Envrionment in which action needs to be executed: local | testnet | mainnet', 'mainnet')
         .option('-lvl --level <string>', 'Logging level: silly | trace | debug | info | warn | error | fatal | none', 'none')
         .option('-c --cacheLocation <string>', 'Realtive path for the Level database location', '/cache/warp')
-        .option('-sil --silent', 'Run CLI in silent mode (no logo, only error messages displayed, logged result not formatted')
+        .option('-sil --silent', 'Run CLI in silent mode (no logo, only error messages displayed, logged result not formatted)')
         .version((0, child_process_1.execSync)('npm view warp-contracts version').toString().replace('\n', ''), '-v, --version', 'Display current version of Warp SDK');
     const options = program.opts();
     program

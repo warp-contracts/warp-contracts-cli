@@ -7,8 +7,8 @@ import { OptionValues } from 'commander';
 export interface CmdOptions {
   evaluationOptions: string[];
   save: boolean;
-  validity: boolean;
-  errorMessages: boolean;
+  stateValidity: boolean;
+  stateErrorMessages: boolean;
 }
 
 export const readState = async (contractId: string, cmdOptions: CmdOptions, options: OptionValues) => {
@@ -30,15 +30,18 @@ export const readState = async (contractId: string, cmdOptions: CmdOptions, opti
     let readStateObj: { state: {}; validity?: {}; errorMessages?: {} } = { state: {} };
     if (cmdOptions.save) {
       const saveFile = typeof cmdOptions.save === 'string' ? cmdOptions.save : `state_${contractId}.json`;
-      if (!cmdOptions.validity && !cmdOptions.errorMessages) {
+      if (!cmdOptions.stateValidity && !cmdOptions.stateErrorMessages) {
+        console.log('true');
         fs.writeFileSync(saveFile, JSON.stringify(cachedValue.state, null, 2));
       } else {
+        console.log('not true');
+        console.log(readStateObj);
         readStateObj = getStateObj(readStateObj, cachedValue, cmdOptions);
         fs.writeFileSync(saveFile, JSON.stringify(readStateObj, null, 2));
       }
       !silent && console.log(`${chalkGreen.bold(`🍭 [SUCCESS]:`)} State saved in: ${chalkBlue(saveFile)} file.`);
     } else {
-      if (!cmdOptions.validity && !cmdOptions.errorMessages) {
+      if (!cmdOptions.stateValidity && !cmdOptions.stateErrorMessages) {
         !silent && console.log(chalkGreen.bold(`🍭 [SUCCESS]:`), `State for`, chalkGreen(`${contractId}:`));
         silent
           ? process.stdout.write(JSON.stringify(cachedValue.state))
@@ -58,10 +61,10 @@ export const readState = async (contractId: string, cmdOptions: CmdOptions, opti
 
 const getStateObj = (readStateObj: any, cachedValue: any, cmdOptions: any) => {
   readStateObj.state = cachedValue.state;
-  if (cmdOptions.validity) {
+  if (cmdOptions.stateValidity) {
     readStateObj.validity = cachedValue.validity;
   }
-  if (cmdOptions.errorMessages) {
+  if (cmdOptions.stateErrorMessages) {
     readStateObj.errorMessages = cachedValue.errorMessages;
   }
   return readStateObj;

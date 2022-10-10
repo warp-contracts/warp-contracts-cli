@@ -25,17 +25,20 @@ const readState = async (contractId, cmdOptions, options) => {
         let readStateObj = { state: {} };
         if (cmdOptions.save) {
             const saveFile = typeof cmdOptions.save === 'string' ? cmdOptions.save : `state_${contractId}.json`;
-            if (!cmdOptions.validity && !cmdOptions.errorMessages) {
+            if (!cmdOptions.stateValidity && !cmdOptions.stateErrorMessages) {
+                console.log('true');
                 fs_1.default.writeFileSync(saveFile, JSON.stringify(cachedValue.state, null, 2));
             }
             else {
+                console.log('not true');
+                console.log(readStateObj);
                 readStateObj = getStateObj(readStateObj, cachedValue, cmdOptions);
                 fs_1.default.writeFileSync(saveFile, JSON.stringify(readStateObj, null, 2));
             }
             !silent && console.log(`${utils_1.chalkGreen.bold(`🍭 [SUCCESS]:`)} State saved in: ${(0, utils_1.chalkBlue)(saveFile)} file.`);
         }
         else {
-            if (!cmdOptions.validity && !cmdOptions.errorMessages) {
+            if (!cmdOptions.stateValidity && !cmdOptions.stateErrorMessages) {
                 !silent && console.log(utils_1.chalkGreen.bold(`🍭 [SUCCESS]:`), `State for`, (0, utils_1.chalkGreen)(`${contractId}:`));
                 silent
                     ? process.stdout.write(JSON.stringify(cachedValue.state))
@@ -57,10 +60,10 @@ const readState = async (contractId, cmdOptions, options) => {
 exports.readState = readState;
 const getStateObj = (readStateObj, cachedValue, cmdOptions) => {
     readStateObj.state = cachedValue.state;
-    if (cmdOptions.validity) {
+    if (cmdOptions.stateValidity) {
         readStateObj.validity = cachedValue.validity;
     }
-    if (cmdOptions.errorMessages) {
+    if (cmdOptions.stateErrorMessages) {
         readStateObj.errorMessages = cachedValue.errorMessages;
     }
     return readStateObj;
