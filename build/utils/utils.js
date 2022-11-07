@@ -39,7 +39,7 @@ const loadWallet = async function (warp, env, options) {
     const walletPath = options.wallet;
     if (!walletPath) {
         load = !silent && (0, exports.loader)('Generating wallet...');
-        if (env === 'local' || env === 'testnet') {
+        if (env === 'local') {
             ({ jwk: wallet } = await warp.testing.generateWallet());
         }
         else {
