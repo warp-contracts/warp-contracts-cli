@@ -47,7 +47,7 @@ export const loadWallet = async function (
     load = !silent && loader('Generating wallet...');
 
     if (env === 'local') {
-      ({ jwk: wallet } = await warp.testing.generateWallet());
+      ({ jwk: wallet } = await warp.generateWallet());
     } else {
       wallet = await warp.arweave.wallets.generate();
     }
