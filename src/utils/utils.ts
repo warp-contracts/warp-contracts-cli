@@ -44,20 +44,23 @@ export const loadWallet = async function (
   const silent = options.silent;
   const walletPath = options.wallet;
   if (!walletPath) {
-    load = !silent && loader('Generating wallet...');
-
-    if (env === 'local' || env === 'testnet') {
-      ({ jwk: wallet } = await warp.testing.generateWallet());
+    if (fs.existsSync(walletFilename)) {
+      load = !silent && loader('Wallet recognition...');
+      wallet = JSON.parse(fs.readFileSync(path.resolve(walletFilename), 'utf8'));
+      !silent && console.log(chalkBlue('👽 [INFO]:'), 'Wallet recognized correctly.');
     } else {
-      wallet = await warp.arweave.wallets.generate();
+      load = !silent && loader('Generating wallet...');
+      ({ jwk: wallet } = await warp.generateWallet());
+      if (!fs.existsSync(walletDir)) fs.mkdirSync(walletDir);
+      fs.writeFileSync(walletFilename, JSON.stringify(wallet));
     }
-    if (!fs.existsSync(walletDir)) fs.mkdirSync(walletDir);
-    fs.writeFileSync(walletFilename, JSON.stringify(wallet));
   } else {
     try {
+      load = !silent && loader('Wallet recognition...');
       wallet = JSON.parse(fs.readFileSync(path.resolve(walletPath), 'utf8'));
       !silent && console.log(chalkBlue('👽 [INFO]:'), 'Wallet recognized correctly.');
     } catch (e) {
+      !silent && load.stop();
       throw new Error(chalk.red('Wallet file not found!'));
     }
   }

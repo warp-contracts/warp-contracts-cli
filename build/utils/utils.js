@@ -38,23 +38,27 @@ const loadWallet = async function (warp, env, options) {
     const silent = options.silent;
     const walletPath = options.wallet;
     if (!walletPath) {
-        load = !silent && (0, exports.loader)('Generating wallet...');
-        if (env === 'local' || env === 'testnet') {
-            ({ jwk: wallet } = await warp.testing.generateWallet());
+        if (fs_1.default.existsSync(walletFilename)) {
+            load = !silent && (0, exports.loader)('Wallet recognition...');
+            wallet = JSON.parse(fs_1.default.readFileSync(path_1.default.resolve(walletFilename), 'utf8'));
+            !silent && console.log((0, exports.chalkBlue)('👽 [INFO]:'), 'Wallet recognized correctly.');
         }
         else {
-            wallet = await warp.arweave.wallets.generate();
+            load = !silent && (0, exports.loader)('Generating wallet...');
+            ({ jwk: wallet } = await warp.generateWallet());
+            if (!fs_1.default.existsSync(walletDir))
+                fs_1.default.mkdirSync(walletDir);
+            fs_1.default.writeFileSync(walletFilename, JSON.stringify(wallet));
         }
-        if (!fs_1.default.existsSync(walletDir))
-            fs_1.default.mkdirSync(walletDir);
-        fs_1.default.writeFileSync(walletFilename, JSON.stringify(wallet));
     }
     else {
         try {
+            load = !silent && (0, exports.loader)('Wallet recognition...');
             wallet = JSON.parse(fs_1.default.readFileSync(path_1.default.resolve(walletPath), 'utf8'));
             !silent && console.log((0, exports.chalkBlue)('👽 [INFO]:'), 'Wallet recognized correctly.');
         }
         catch (e) {
+            !silent && load.stop();
             throw new Error(chalk_1.default.red('Wallet file not found!'));
         }
     }
