@@ -39,6 +39,7 @@ Options:
   -h, --help                                  display help for command
 
 Commands:
+  generate                                    Generate project template
   deploy                                      Deploy contract
   read [options] <contractId>                 Read contract state based on contract id
   write [options] <contractId> <interaction>  Write interaction to the contract based on specified contract id
@@ -48,6 +49,10 @@ Commands:
 ```
 
 ## Commands
+
+### Generate
+
+Generate one of the project templates provided in [this repository](https://github.com/warp-contracts/templates). Clones chosen Github subdirectory into new project. Sample contract with tools to deploy contract in test and mainnet environment as well to test the contract are provided.
 
 ### Deploy
 

@@ -7,6 +7,7 @@ import { printInfo } from './utils/utils';
 import { clearCache } from './commands/clearCache';
 import { execSync } from 'child_process';
 import { viewState } from './commands/viewState';
+import { generate } from './commands/generate';
 
 (async () => {
   const program = new Command();
@@ -33,6 +34,16 @@ import { viewState } from './commands/viewState';
       'Display current version of Warp SDK'
     );
   const options = program.opts();
+
+  program
+    .command('generate')
+    .description('Generate project template')
+    .action(async () => {
+      if (options.silent !== true) {
+        await printInfo();
+      }
+      generate(options);
+    });
 
   program
     .command('deploy')

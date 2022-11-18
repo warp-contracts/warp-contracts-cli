@@ -9,6 +9,7 @@ const utils_1 = require("./utils/utils");
 const clearCache_1 = require("./commands/clearCache");
 const child_process_1 = require("child_process");
 const viewState_1 = require("./commands/viewState");
+const generate_1 = require("./commands/generate");
 (async () => {
     const program = new commander_1.Command();
     program
@@ -19,6 +20,15 @@ const viewState_1 = require("./commands/viewState");
         .option('-sil --silent', 'Run CLI in silent mode (no logo, only error messages displayed, logged result not formatted)')
         .version((0, child_process_1.execSync)('npm view warp-contracts version').toString().replace('\n', ''), '-v, --version', 'Display current version of Warp SDK');
     const options = program.opts();
+    program
+        .command('generate')
+        .description('Generate project template')
+        .action(async () => {
+        if (options.silent !== true) {
+            await (0, utils_1.printInfo)();
+        }
+        (0, generate_1.generate)(options);
+    });
     program
         .command('deploy')
         .description('Deploy contract')
