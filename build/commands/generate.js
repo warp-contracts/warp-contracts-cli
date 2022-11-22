@@ -69,6 +69,8 @@ const generatePrompt = (templates, load, options) => {
                 load.stop();
                 return;
             }
+            console.log(`${projectName}/${projectChoice}`);
+            fs_1.default.renameSync(`${projectName}/${projectChoice}`, `${projectName}/contracts`);
             load.stop();
             !options.silent &&
                 console.log(utils_1.chalkGreen.bold(`🍭 [SUCCESS]:`), `Template generated in ${projectName} directory.`);
