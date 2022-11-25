@@ -75,16 +75,12 @@ const generatePrompt = (templates: string[], uiTemplates: string[], load: any, o
     const projectChoice = answers['project-choice'];
     const projectName = answers['project-name'];
     const appConfirm = answers['app-confirm'];
-    const appChoice = answers['app-choice'];
 
     if (appConfirm == true) {
       inquirer.prompt(APP).then(() => {
+        const appChoice = answers['app-choice'];
         if (fs.existsSync(path.resolve(projectName))) {
           fs.rmSync(path.resolve(projectName), { recursive: true, force: true });
-        }
-
-        if (fs.existsSync(path.resolve(appChoice))) {
-          fs.rmSync(path.resolve(appChoice), { recursive: true, force: true });
         }
 
         load = !options.silent && loader('Generating template...');
@@ -97,7 +93,6 @@ const generatePrompt = (templates: string[], uiTemplates: string[], load: any, o
               load.stop();
               return;
             }
-            fs.renameSync(`${projectName}/${projectChoice}`, `${projectName}/contracts`);
             load.stop();
             !options.silent &&
               console.log(chalkGreen.bold(`🍭 [SUCCESS]:`), `Template generated in ${projectName} directory.`);
@@ -119,7 +114,6 @@ const generatePrompt = (templates: string[], uiTemplates: string[], load: any, o
             load.stop();
             return;
           }
-          fs.renameSync(`${projectName}/${projectChoice}`, `${projectName}/contracts`);
 
           load.stop();
           !options.silent &&
