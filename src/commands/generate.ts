@@ -38,13 +38,29 @@ export const generate = async (options: OptionValues) => {
 };
 
 const generatePrompt = (templates: string[], uiTemplates: string[], load: any, options: OptionValues) => {
+  let createProject = (projectName: string, projectChoice: string, appChoice?: string) => {
+    if (fs.existsSync(path.resolve(projectName))) {
+      fs.rmSync(path.resolve(projectName), { recursive: true, force: true });
+    }
+
+    load = !options.silent && loader('Generating template...');
+    exec(
+      appChoice !== 'undefined'
+        ? `mkdir ${projectName} && cd ${projectName} && git init && git remote add -f origin https://github.com/warp-contracts/templates && git config core.sparseCheckout true && echo "/contracts/${projectChoice}/" >> .git/info/sparse-checkout && echo "/app/${appChoice}/" >> .git/info/sparse-checkout && git pull origin main && rm -rf .git`
+        : `mkdir ${projectName} && cd ${projectName} && git init && git remote add -f origin https://github.com/warp-contracts/templates && git config core.sparseCheckout true && echo "/contracts/${projectChoice}/" >> .git/info/sparse-checkout && git pull origin main && rm -rf .git`,
+      (error, stdout, stderr) => {
+        if (error) {
+          console.error(chalk.red.bold(`💣 [ERROR]:`), `Error while generating template: ${error.message} `);
+          load.stop();
+          return;
+        }
+        load.stop();
+        !options.silent &&
+          console.log(chalkGreen.bold(`🍭 [SUCCESS]:`), `Template generated in ${projectName} directory.`);
+      }
+    );
+  };
   const QUESTIONS = [
-    {
-      name: 'project-choice',
-      type: 'list',
-      message: 'What project template would you like to generate?',
-      choices: templates
-    },
     {
       name: 'project-name',
       type: 'input',
@@ -53,6 +69,12 @@ const generatePrompt = (templates: string[], uiTemplates: string[], load: any, o
         if (/^([A-Za-z\-\_\d])+$/.test(input)) return true;
         else return 'Project name may only include letters, numbers, underscores and hashes.';
       }
+    },
+    {
+      name: 'project-choice',
+      type: 'list',
+      message: 'What project template would you like to generate?',
+      choices: templates
     },
     {
       name: 'app-confirm',
@@ -77,49 +99,12 @@ const generatePrompt = (templates: string[], uiTemplates: string[], load: any, o
     const appConfirm = answers['app-confirm'];
 
     if (appConfirm == true) {
-      inquirer.prompt(APP).then(() => {
+      inquirer.prompt(APP).then((answers) => {
         const appChoice = answers['app-choice'];
-        if (fs.existsSync(path.resolve(projectName))) {
-          fs.rmSync(path.resolve(projectName), { recursive: true, force: true });
-        }
-
-        load = !options.silent && loader('Generating template...');
-
-        exec(
-          `mkdir ${projectName} && cd ${projectName} && git init && git remote add -f origin https://github.com/warp-contracts/templates && git config core.sparseCheckout true && echo "${projectChoice}" >> .git/info/sparse-checkout && git config core.sparseCheckout false && echo "${appChoice}" >> .git/info/sparse-checkout && git pull origin main && git config core.sparseCheckout false && rm -rf .git`,
-          (error, stdout, stderr) => {
-            if (error) {
-              console.error(chalk.red.bold(`💣 [ERROR]:`), `Error while generating template: ${error.message} `);
-              load.stop();
-              return;
-            }
-            load.stop();
-            !options.silent &&
-              console.log(chalkGreen.bold(`🍭 [SUCCESS]:`), `Template generated in ${projectName} directory.`);
-          }
-        );
+        createProject(projectName, projectChoice, appChoice);
       });
     } else {
-      if (fs.existsSync(path.resolve(projectName))) {
-        fs.rmSync(path.resolve(projectName), { recursive: true, force: true });
-      }
-
-      load = !options.silent && loader('Generating template...');
-
-      exec(
-        `mkdir ${projectName} && cd ${projectName} && git init && git remote add -f origin https://github.com/warp-contracts/templates && git config core.sparseCheckout true && echo "${projectChoice}" >> .git/info/sparse-checkout  && git pull origin main && git config core.sparseCheckout false && rm -rf .git`,
-        (error, stdout, stderr) => {
-          if (error) {
-            console.error(chalk.red.bold(`💣 [ERROR]:`), `Error while generating template: ${error.message} `);
-            load.stop();
-            return;
-          }
-
-          load.stop();
-          !options.silent &&
-            console.log(chalkGreen.bold(`🍭 [SUCCESS]:`), `Template generated in ${projectName} directory.`);
-        }
-      );
+      createProject(projectName, projectChoice);
     }
   });
 };
