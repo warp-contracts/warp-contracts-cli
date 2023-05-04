@@ -11,6 +11,7 @@ const warp_contracts_1 = require("warp-contracts");
 const chalk_1 = __importDefault(require("chalk"));
 const inquirer_1 = __importDefault(require("inquirer"));
 const mime_types_1 = __importDefault(require("mime-types"));
+const warp_contracts_plugin_deploy_1 = require("warp-contracts-plugin-deploy");
 const deployContract = async (options) => {
     const env = options.environment;
     let load;
@@ -44,9 +45,9 @@ const deployFunc = async (options, env, state, sourceFile, sourceTxId, wasmSrc, 
         contractSrc = wasmSrc
             ? fs_1.default.readFileSync(path_1.default.resolve(sourceFile))
             : fs_1.default.readFileSync(path_1.default.resolve(sourceFile), 'utf8');
-        deployment = await warp.createContract.deploy({
-            wallet,
-            initState: JSON.stringify(initialState),
+        deployment = await warp.deploy({
+            wallet: env == 'local' ? wallet : new warp_contracts_plugin_deploy_1.ArweaveSigner(wallet),
+            initState: initialState,
             src: contractSrc,
             ...(wasmSrc && { wasmSrcCodeDir: path_1.default.resolve(wasmSrc) }),
             ...(wasmGlueCode && { wasmGlueCode: path_1.default.resolve(wasmGlueCode) }),
@@ -59,7 +60,7 @@ const deployFunc = async (options, env, state, sourceFile, sourceTxId, wasmSrc, 
         });
     }
     else if (sourceTxId) {
-        deployment = await warp.createContract.deployFromSourceTx({
+        deployment = await warp.deployFromSourceTx({
             wallet,
             initState: JSON.stringify(initialState),
             srcTxId: sourceTxId,
@@ -265,6 +266,7 @@ const deployPrompt = async (deployFunc, options, env, load) => {
                         }
                         else {
                             const { sourceFile, initialState, wasmSrc, wasmGlueCode } = answers;
+                            console.log('State from answers', initialState);
                             await deployFunc(options, env, initialState, sourceFile, null, wasmSrc, wasmGlueCode, load, null, null);
                         }
                     });

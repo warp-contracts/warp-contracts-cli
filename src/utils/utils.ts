@@ -10,6 +10,7 @@ import loading from 'loading-cli';
 import clear from 'clear';
 import figlet from 'figlet';
 import { OptionValues } from 'commander';
+import { DeployPlugin } from 'warp-contracts-plugin-deploy';
 
 export interface PackageJson {
   name: string;
@@ -22,11 +23,11 @@ export interface PackageJson {
 export const getWarp = (env: string, cacheLocation: string) => {
   const cache = process.cwd() + cacheLocation;
   if (env == 'local') {
-    return WarpFactory.forLocal(1984);
+    return WarpFactory.forLocal().use(new DeployPlugin());
   } else if (env == 'testnet') {
-    return WarpFactory.forTestnet();
+    return WarpFactory.forTestnet().use(new DeployPlugin());
   } else if (env == 'mainnet') {
-    return WarpFactory.forMainnet({ dbLocation: cache, ...defaultCacheOptions });
+    return WarpFactory.forMainnet({ dbLocation: cache, ...defaultCacheOptions }).use(new DeployPlugin());
   } else {
     throw new Error(chalk.red(`Unknown network:`, chalk.bgRed(`${env}`)));
   }

@@ -16,7 +16,6 @@ export const writeInteraction = async (
   let load: any;
   try {
     LoggerFactory.INST.logLevel(options.level);
-
     const warp = getWarp(env, options.cacheLocation);
     !silent &&
       console.log(chalkBlue.bold(`👽 [INFO]:`), `Initializing Warp in`, chalkBlue.bold(`${env}`), 'environment.');

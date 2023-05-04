@@ -6,6 +6,7 @@ import chalk from 'chalk';
 import inquirer from 'inquirer';
 import { OptionValues } from 'commander';
 import mime from 'mime-types';
+import { ArweaveSigner } from 'warp-contracts-plugin-deploy';
 
 export const deployContract = async (options: OptionValues) => {
   const env = options.environment;
@@ -51,9 +52,9 @@ const deployFunc = async (
     contractSrc = wasmSrc
       ? fs.readFileSync(path.resolve(sourceFile))
       : fs.readFileSync(path.resolve(sourceFile), 'utf8');
-    deployment = await warp.createContract.deploy({
-      wallet,
-      initState: JSON.stringify(initialState),
+    deployment = await warp.deploy({
+      wallet: env == 'local' ? wallet : new ArweaveSigner(wallet),
+      initState: initialState,
       src: contractSrc,
       ...(wasmSrc && { wasmSrcCodeDir: path.resolve(wasmSrc) }),
       ...(wasmGlueCode && { wasmGlueCode: path.resolve(wasmGlueCode) }),
@@ -65,7 +66,7 @@ const deployFunc = async (
       })
     });
   } else if (sourceTxId) {
-    deployment = await warp.createContract.deployFromSourceTx({
+    deployment = await warp.deployFromSourceTx({
       wallet,
       initState: JSON.stringify(initialState),
       srcTxId: sourceTxId,
@@ -331,6 +332,7 @@ const deployPrompt = async (deployFunc: any, options: OptionValues, env: string,
                       });
                   } else {
                     const { sourceFile, initialState, wasmSrc, wasmGlueCode } = answers;
+                    console.log('State from answers', initialState);
                     await deployFunc(
                       options,
                       env,

@@ -14,16 +14,17 @@ const find_up_1 = __importDefault(require("find-up"));
 const loading_cli_1 = __importDefault(require("loading-cli"));
 const clear_1 = __importDefault(require("clear"));
 const figlet_1 = __importDefault(require("figlet"));
+const warp_contracts_plugin_deploy_1 = require("warp-contracts-plugin-deploy");
 const getWarp = (env, cacheLocation) => {
     const cache = process.cwd() + cacheLocation;
     if (env == 'local') {
-        return warp_contracts_1.WarpFactory.forLocal(1984);
+        return warp_contracts_1.WarpFactory.forLocal().use(new warp_contracts_plugin_deploy_1.DeployPlugin());
     }
     else if (env == 'testnet') {
-        return warp_contracts_1.WarpFactory.forTestnet();
+        return warp_contracts_1.WarpFactory.forTestnet().use(new warp_contracts_plugin_deploy_1.DeployPlugin());
     }
     else if (env == 'mainnet') {
-        return warp_contracts_1.WarpFactory.forMainnet({ dbLocation: cache, ...warp_contracts_1.defaultCacheOptions });
+        return warp_contracts_1.WarpFactory.forMainnet({ dbLocation: cache, ...warp_contracts_1.defaultCacheOptions }).use(new warp_contracts_plugin_deploy_1.DeployPlugin());
     }
     else {
         throw new Error(chalk_1.default.red(`Unknown network:`, chalk_1.default.bgRed(`${env}`)));

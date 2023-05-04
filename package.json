@@ -48,7 +48,8 @@
     "nano": "^10.0.0",
     "semver": "^7.3.7",
     "shelljs": "^0.8.5",
-    "warp-contracts": "1.2.24"
+    "warp-contracts": "1.4.5",
+    "warp-contracts-plugin-deploy": "^1.0.8"
   },
   "bin": {
     "warp": "./build/cli.js"

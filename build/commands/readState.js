@@ -26,12 +26,9 @@ const readState = async (contractId, cmdOptions, options) => {
         if (cmdOptions.save) {
             const saveFile = typeof cmdOptions.save === 'string' ? cmdOptions.save : `state_${contractId}.json`;
             if (!cmdOptions.stateValidity && !cmdOptions.stateErrorMessages) {
-                console.log('true');
                 fs_1.default.writeFileSync(saveFile, JSON.stringify(cachedValue.state, null, 2));
             }
             else {
-                console.log('not true');
-                console.log(readStateObj);
                 readStateObj = getStateObj(readStateObj, cachedValue, cmdOptions);
                 fs_1.default.writeFileSync(saveFile, JSON.stringify(readStateObj, null, 2));
             }
