@@ -11,6 +11,12 @@ import clear from 'clear';
 import figlet from 'figlet';
 import { OptionValues } from 'commander';
 import { DeployPlugin } from 'warp-contracts-plugin-deploy';
+import { EthersExtension } from 'warp-contracts-plugin-ethers';
+import { NlpExtension } from 'warp-contracts-plugin-nlp';
+//@ts-ignore
+import { EvmSignatureVerificationServerPlugin } from 'warp-contracts-plugin-signature/server';
+import { VRFPlugin } from 'warp-contracts-plugin-vrf';
+import { JWTVerifyPlugin } from '@othent/warp-contracts-plugin-jwt-verify';
 
 export interface PackageJson {
   name: string;
@@ -23,11 +29,29 @@ export interface PackageJson {
 export const getWarp = (env: string, cacheLocation: string) => {
   const cache = process.cwd() + cacheLocation;
   if (env == 'local') {
-    return WarpFactory.forLocal().use(new DeployPlugin());
+    return WarpFactory.forLocal()
+      .use(new DeployPlugin())
+      .use(new EthersExtension())
+      .use(new NlpExtension())
+      .use(new EvmSignatureVerificationServerPlugin())
+      .use(new VRFPlugin())
+      .use(new JWTVerifyPlugin());
   } else if (env == 'testnet') {
-    return WarpFactory.forTestnet().use(new DeployPlugin());
+    return WarpFactory.forTestnet()
+      .use(new DeployPlugin())
+      .use(new EthersExtension())
+      .use(new NlpExtension())
+      .use(new EvmSignatureVerificationServerPlugin())
+      .use(new VRFPlugin())
+      .use(new JWTVerifyPlugin());
   } else if (env == 'mainnet') {
-    return WarpFactory.forMainnet({ dbLocation: cache, ...defaultCacheOptions }).use(new DeployPlugin());
+    return WarpFactory.forMainnet({ dbLocation: cache, ...defaultCacheOptions })
+      .use(new DeployPlugin())
+      .use(new EthersExtension())
+      .use(new NlpExtension())
+      .use(new EvmSignatureVerificationServerPlugin())
+      .use(new VRFPlugin())
+      .use(new JWTVerifyPlugin());
   } else {
     throw new Error(chalk.red(`Unknown network:`, chalk.bgRed(`${env}`)));
   }

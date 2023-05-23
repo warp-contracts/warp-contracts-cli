@@ -15,16 +15,40 @@ const loading_cli_1 = __importDefault(require("loading-cli"));
 const clear_1 = __importDefault(require("clear"));
 const figlet_1 = __importDefault(require("figlet"));
 const warp_contracts_plugin_deploy_1 = require("warp-contracts-plugin-deploy");
+const warp_contracts_plugin_ethers_1 = require("warp-contracts-plugin-ethers");
+const warp_contracts_plugin_nlp_1 = require("warp-contracts-plugin-nlp");
+//@ts-ignore
+const server_1 = require("warp-contracts-plugin-signature/server");
+const warp_contracts_plugin_vrf_1 = require("warp-contracts-plugin-vrf");
+const warp_contracts_plugin_jwt_verify_1 = require("@othent/warp-contracts-plugin-jwt-verify");
 const getWarp = (env, cacheLocation) => {
     const cache = process.cwd() + cacheLocation;
     if (env == 'local') {
-        return warp_contracts_1.WarpFactory.forLocal().use(new warp_contracts_plugin_deploy_1.DeployPlugin());
+        return warp_contracts_1.WarpFactory.forLocal()
+            .use(new warp_contracts_plugin_deploy_1.DeployPlugin())
+            .use(new warp_contracts_plugin_ethers_1.EthersExtension())
+            .use(new warp_contracts_plugin_nlp_1.NlpExtension())
+            .use(new server_1.EvmSignatureVerificationServerPlugin())
+            .use(new warp_contracts_plugin_vrf_1.VRFPlugin())
+            .use(new warp_contracts_plugin_jwt_verify_1.JWTVerifyPlugin());
     }
     else if (env == 'testnet') {
-        return warp_contracts_1.WarpFactory.forTestnet().use(new warp_contracts_plugin_deploy_1.DeployPlugin());
+        return warp_contracts_1.WarpFactory.forTestnet()
+            .use(new warp_contracts_plugin_deploy_1.DeployPlugin())
+            .use(new warp_contracts_plugin_ethers_1.EthersExtension())
+            .use(new warp_contracts_plugin_nlp_1.NlpExtension())
+            .use(new server_1.EvmSignatureVerificationServerPlugin())
+            .use(new warp_contracts_plugin_vrf_1.VRFPlugin())
+            .use(new warp_contracts_plugin_jwt_verify_1.JWTVerifyPlugin());
     }
     else if (env == 'mainnet') {
-        return warp_contracts_1.WarpFactory.forMainnet({ dbLocation: cache, ...warp_contracts_1.defaultCacheOptions }).use(new warp_contracts_plugin_deploy_1.DeployPlugin());
+        return warp_contracts_1.WarpFactory.forMainnet({ dbLocation: cache, ...warp_contracts_1.defaultCacheOptions })
+            .use(new warp_contracts_plugin_deploy_1.DeployPlugin())
+            .use(new warp_contracts_plugin_ethers_1.EthersExtension())
+            .use(new warp_contracts_plugin_nlp_1.NlpExtension())
+            .use(new server_1.EvmSignatureVerificationServerPlugin())
+            .use(new warp_contracts_plugin_vrf_1.VRFPlugin())
+            .use(new warp_contracts_plugin_jwt_verify_1.JWTVerifyPlugin());
     }
     else {
         throw new Error(chalk_1.default.red(`Unknown network:`, chalk_1.default.bgRed(`${env}`)));

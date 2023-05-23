@@ -32,6 +32,7 @@
     "typescript": "*"
   },
   "dependencies": {
+    "@othent/warp-contracts-plugin-jwt-verify": "^1.0.401",
     "@types/fs-extra": "^9.0.13",
     "@types/semver": "^7.3.12",
     "chalk": "4.1.2",
@@ -49,7 +50,11 @@
     "semver": "^7.3.7",
     "shelljs": "^0.8.5",
     "warp-contracts": "1.4.5",
-    "warp-contracts-plugin-deploy": "^1.0.8"
+    "warp-contracts-plugin-deploy": "^1.0.8",
+    "warp-contracts-plugin-ethers": "^1.0.7",
+    "warp-contracts-plugin-nlp": "^1.0.8",
+    "warp-contracts-plugin-signature": "^1.0.12",
+    "warp-contracts-plugin-vrf": "^1.0.4"
   },
   "bin": {
     "warp": "./build/cli.js"
