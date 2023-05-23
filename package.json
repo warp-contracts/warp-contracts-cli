@@ -1,6 +1,6 @@
 {
   "name": "warp-contracts-cli",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "main": "./build/cli.js",
   "license": "MIT",
   "scripts": {
